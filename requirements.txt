@@ -1,0 +1,5 @@
+streamlit
+db-sqlite3
+hashlib
+numpy
+matplotlib
