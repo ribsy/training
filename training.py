@@ -81,6 +81,8 @@ def signup():
         else:
             hashed_password = hash_password(new_password)
             add_user_to_db(new_username, hashed_password)
+            st.session_state['role'] = 'user'
+            st.session_state['username'] = new_username
 
 
 # Login function for registered users
@@ -120,21 +122,24 @@ def member_dashboard():
         write_slider_values(slider1, slider2, slider3, slider4)
         st.success("Slider values saved to database!")
 
-    conn = sqlite3.connect('train.db')
-    probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
-    conn.close()
+    st.write("")
+    st.write(f"ONLY AFTER submitting your results – click on the 'Show Group Results' button :sunglasses:")
+    st.write()
 
-    unlikely = [row[0] for row in probs_data]
-    probable = [row[1] for row in probs_data]
-    likely = [row[2] for row in probs_data]
-    highly_likely = [row[3] for row in probs_data]
+    if st.button("Show Group Results"):
+        conn = sqlite3.connect('train.db')
+        probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
+        conn.close()
 
-    prob_chart(unlikely, "Unlikely")
-    prob_chart(probable, "Probable")
-    prob_chart(likely, "Likely")
-    prob_chart(highly_likely, "Highly")
+        unlikely = [row[0] for row in probs_data]
+        probable = [row[1] for row in probs_data]
+        likely = [row[2] for row in probs_data]
+        highly_likely = [row[3] for row in probs_data]
 
-    #unlikely
+        prob_chart(unlikely, "Unlikely")
+        prob_chart(probable, "Probable")
+        prob_chart(likely, "Likely")
+        prob_chart(highly_likely, "Highly")
 
 
 # Admin dashboard with additional features
@@ -157,13 +162,13 @@ def view_user_data():
 # Main function to handle different states
 def main():
     st.sidebar.title("Navigation")
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Dashboard"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words"])
 
     if choice == "Sign Up":
         signup()
     elif choice == "Login":
         login()
-    elif choice == "Dashboard":
+    elif choice == "Probability Words":
         if 'username' in st.session_state:
             if st.session_state['role'] == 'admin':
                 admin_dashboard()
