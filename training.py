@@ -132,20 +132,20 @@ def member_dashboard():
     st.write()
 
     if st.session_state['show_group_results']:
-        if st.button("Show Group Results"):
-            conn = sqlite3.connect('train.db')
-            probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
-            conn.close()
+        #if st.button("Show Group Results"):
+        conn = sqlite3.connect('train.db')
+        probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
+        conn.close()
 
-            unlikely = [row[0] for row in probs_data]
-            probable = [row[1] for row in probs_data]
-            likely = [row[2] for row in probs_data]
-            highly_likely = [row[3] for row in probs_data]
+        unlikely = [row[0] for row in probs_data]
+        probable = [row[1] for row in probs_data]
+        likely = [row[2] for row in probs_data]
+        highly_likely = [row[3] for row in probs_data]
 
-            prob_chart(unlikely, "Unlikely")
-            prob_chart(probable, "Probable")
-            prob_chart(likely, "Likely")
-            prob_chart(highly_likely, "Highly")
+        prob_chart(unlikely, "Unlikely")
+        prob_chart(probable, "Probable")
+        prob_chart(likely, "Likely")
+        prob_chart(highly_likely, "Highly")
 
 
 # Admin dashboard with additional features
