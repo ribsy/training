@@ -117,29 +117,35 @@ def member_dashboard():
     slider3 = st.slider("Likely", 0, 100, 0)  # Default value is 0
     slider4 = st.slider("Highly Likely", 0, 100, 0)  # Default value is 0
 
+
+    if 'show_group_results' not in st.session_state:
+        st.session_state['show_group_results'] = False
+        
     # Write slider values to the database when a button is clicked
     if st.button("Save Slider Values"):
         write_slider_values(slider1, slider2, slider3, slider4)
         st.success("Slider values saved to database!")
+        st.session_state['show_group_results'] = True  # Set the session state variable to True
 
     st.write("")
     st.write(f"ONLY AFTER submitting your results – click on the 'Show Group Results' button :sunglasses:")
     st.write()
 
-    if st.button("Show Group Results"):
-        conn = sqlite3.connect('train.db')
-        probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
-        conn.close()
+    if st.session_state['show_group_results']:
+        if st.button("Show Group Results"):
+            conn = sqlite3.connect('train.db')
+            probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
+            conn.close()
 
-        unlikely = [row[0] for row in probs_data]
-        probable = [row[1] for row in probs_data]
-        likely = [row[2] for row in probs_data]
-        highly_likely = [row[3] for row in probs_data]
+            unlikely = [row[0] for row in probs_data]
+            probable = [row[1] for row in probs_data]
+            likely = [row[2] for row in probs_data]
+            highly_likely = [row[3] for row in probs_data]
 
-        prob_chart(unlikely, "Unlikely")
-        prob_chart(probable, "Probable")
-        prob_chart(likely, "Likely")
-        prob_chart(highly_likely, "Highly")
+            prob_chart(unlikely, "Unlikely")
+            prob_chart(probable, "Probable")
+            prob_chart(likely, "Likely")
+            prob_chart(highly_likely, "Highly")
 
 
 # Admin dashboard with additional features
