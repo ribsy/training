@@ -120,6 +120,7 @@ def member_dashboard():
 
     if 'show_group_results' not in st.session_state:
         st.session_state['show_group_results'] = False
+        st.session_state['rerun_group_results'] = False
         
     # Write slider values to the database when a button is clicked
     if st.button("Save Slider Values"):
@@ -131,8 +132,10 @@ def member_dashboard():
     #st.write(f"ONLY AFTER submitting your results – click on the 'Show Group Results' button :sunglasses:")
     #st.write()
 
-    if st.session_state['show_group_results']:
-        #if st.button("Show Group Results"):
+    if st.session_state['show_group_results'] or st.session_state['rerun_group_results']:
+        if st.button("Show Group Results"):
+            st.session_state['rerun_group_results'] = True
+            
         conn = sqlite3.connect('train.db')
         probs_data = conn.execute('SELECT unlikely, probable, likely, highly_likely FROM probs').fetchall()
         conn.close()
