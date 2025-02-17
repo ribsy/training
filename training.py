@@ -127,9 +127,9 @@ def member_dashboard():
         st.success("Slider values saved to database!")
         st.session_state['show_group_results'] = True  # Set the session state variable to True
 
-    st.write("")
-    st.write(f"ONLY AFTER submitting your results – click on the 'Show Group Results' button :sunglasses:")
-    st.write()
+    #st.write("")
+    #st.write(f"ONLY AFTER submitting your results – click on the 'Show Group Results' button :sunglasses:")
+    #st.write()
 
     if st.session_state['show_group_results']:
         #if st.button("Show Group Results"):
