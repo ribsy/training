@@ -5,6 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+st.set_page_config(
+        page_title="FORECASTER TRAINING",
+        page_icon=":shark:",
+        layout="wide",
+        initial_sidebar_state="expanded",  # or "collapsed"
+        # Apply the theme from the config file
+        #theme="dark"
+    )
+
 # Initialize the SQLite database
 def init_db():
     conn = sqlite3.connect('train.db')
