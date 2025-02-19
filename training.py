@@ -121,13 +121,35 @@ def login():
         else:
             st.error("Invalid username or password")
 
-def prob_chart(prob_val, name_val):
+def prob_chart_back(prob_val, name_val):
     fig, ax = plt.subplots(figsize=(8, 2))
     ax.hist(prob_val, bins=100, edgecolor='black')  # Adjust bins as needed
     ax.set_xlim(0, 100)
     ax.set_xlabel(name_val)
     ax.set_ylabel(name_val)
     ax.set_title('Histogram of Probability Words')
+    st.pyplot(fig)
+
+def prob_chart(prob_val, name_val):
+    fig, ax = plt.subplots(figsize=(8, 2))
+
+    # Set black background
+    ax.set_facecolor('black')
+    fig.patch.set_facecolor('black')
+
+    # Histogram with red bars and white edges
+    ax.hist(prob_val, bins=100, color='red')
+
+    # Set white axis labels and ticks
+    ax.set_xlim(0, 100)
+    ax.tick_params(axis='x', colors='white')
+    ax.tick_params(axis='y', colors='white')
+    ax.set_xlabel(name_val, color='white')
+    ax.set_ylabel(name_val, color='white')
+
+    # Set white title
+    ax.set_title('Histogram of Probability Words', color='white')
+
     st.pyplot(fig)
 
 
@@ -193,7 +215,7 @@ def forecast_elephant():
         </style>
         <div class="boxed-text">
             <B>USING PEOPLE TO PREDICT THE WEIGHT OF A COW</B><br>
-            How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fits? What is your upper bound? What is your lower bound?
+            How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fit? What is your upper bound? What is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
             This is your 80% prediction range.
@@ -224,14 +246,14 @@ def forecast_elephant():
 
         st.session_state['high_cow_lbs'] = high_cow_lbs
         st.session_state['low_cow_lbs'] = low_cow_lbs
-        st.session_state['mean_cow_lbs'] = mean_cow_lbs 
+        st.session_state['mean_cow_lbs'] = mean_cow_lbs
 
         # Display the selected range
         #st.write(f"Lower: {low_cow} - {high_cow} Kirks")
         st.write(f"Lower Bound Cow Weight: {low_cow_lbs} lbs")
         st.write(f"Upper Bound Cow Weight: {high_cow_lbs} lbs")
         st.write(f"Unit Cow Weight: {mean_cow_lbs} lbs")
-  
+
     st.markdown(
         """
         <style>
@@ -243,7 +265,7 @@ def forecast_elephant():
         </style>
         <div class="boxed-text">
             <B>USING COWS TO PREDICT THE WEIGHT OF AN ELEPHANTS</B><br>
-            How many cows fit into an elephant? Use your imagination again. You will use the average cow weight you predictive above to do this. 
+            How many cows fit into an elephant? Use your imagination again. You will use the average cow weight you predictive above to do this.
             First determine what your upper bound count of cows is? Next, what is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
@@ -252,7 +274,7 @@ def forecast_elephant():
        """,
         unsafe_allow_html=True,
     )
-    
+
     # Row 2
     col2 = st.columns(1)  # Create two columns in the second row
     with col2[0]:
@@ -270,7 +292,7 @@ def forecast_elephant():
 
         # Display the selected range
         #st.write(f"Selected range: {low_elph} - {high_elph}")
-    
+
     col3 = st.columns(1)
     with col3[0]:
         #if st.button("Calculate Elephant"):
@@ -289,12 +311,12 @@ def forecast_elephant():
 
     if st.button("Submit Elephant Forecast"):
          st.write(f"Forecasting Score: {st.session_state['score']}")
-         write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'], 
-                               st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'], 
+         write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'],
+                               st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'],
                                st.session_state['score'])
          if st.success("Elephant Forecast Saved!"):
             st.session_state['elephant_saved'] = True  # Set the session state variable to True
-         
+
     if 'elephant_saved' in st.session_state:
         st.markdown(
             """
@@ -316,8 +338,8 @@ def forecast_elephant():
         )
 
         st.write("\n")
-        if st.button("View All Elephant Forecasts and Scores"):   
-            view_forecasts() 
+        if st.button("View All Elephant Forecasts and Scores"):
+            view_forecasts()
 
 
 #Modified Brier Score For Elephant Forecasts
@@ -340,14 +362,14 @@ def view_forecasts():
     conn.close()
 
     # Get column names from the cursor description
-    column_names = [description[0] for description in cursor.description]  
+    column_names = [description[0] for description in cursor.description]
 
     # Create a pandas DataFrame with column names
-    df = pd.DataFrame(fc_data, columns=column_names) 
+    df = pd.DataFrame(fc_data, columns=column_names)
 
     # Display the DataFrame using st.dataframe()
     st.dataframe(df)
-  
+
 
 # Display all user data for admin users
 def view_user_data():
@@ -356,7 +378,7 @@ def view_user_data():
     cursor.execute("SELECT username, role FROM users")
     user_data = cursor.fetchall()
     conn.close()
-    
+
 
 # Main function to handle different states
 def main():
