@@ -392,15 +392,16 @@ def view_user_data():
 # Main function to handle different states
 def main():
     st.sidebar.title("Navigation")
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting"])
+
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting"])  
 
     if choice == "Sign Up":
         signup()
     elif choice == "Login":
         login()
-    elif choice == "Probability Words":
+    elif choice == "Probability Words" and 'role' in st.session_state:
         probability_words()
-    elif choice == "Forecasting":
+    elif choice == "Forecasting" and 'role' in st.session_state:
         forecast_elephant()
     else:
         st.warning("Please log in to access the dashboard.")
