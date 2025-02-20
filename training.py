@@ -8,7 +8,7 @@ import pandas as pd
 st.set_page_config(
         page_title="FORECASTER TRAINING",
         page_icon=":shark:",
-        layout="wide",
+        #layout="wide",
         initial_sidebar_state="expanded",  # or "collapsed"
         # Apply the theme from the config file
         #theme="dark"
