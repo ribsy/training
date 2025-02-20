@@ -1,3 +1,5 @@
+%%writefile app.py
+
 import sqlite3
 import hashlib
 import streamlit as st
@@ -210,9 +212,30 @@ def probability_words():
         prob_chart(likely, "Likely")
         prob_chart(highly_likely, "Highly")
 
+def markdown_box(bold_title, text_vals):
+    """
+    Displays a text box with a bold title and text values using markdown.
+    """
+    html_code = f"""
+        <style>
+        .boxed-text {{
+            border: 1px solid #000;
+            padding: 10px;
+            border-radius: 5px; /* Optional: Add rounded corners */
+        }}
+        </style>
+        <div class="boxed-text">
+            <B>{bold_title}</B><br>
+            {text_vals}
+        </div>
+    """
+    st.markdown(html_code, unsafe_allow_html=True)
+
+
 
 def forecast_elephant():
     st.title("FORECASTING ELEPHANTS")
+
     st.markdown(
         """
         <style>
@@ -379,6 +402,47 @@ def view_forecasts():
     # Display the DataFrame using st.dataframe()
     st.dataframe(df)
 
+def play_burndown():
+    st.title("BURNDOWN")
+    markdown_box("HITS AND MISSES",
+    "This is just a bunch of text"
+    )
+
+    st.write("\n")
+
+
+    
+    col1, col2, col3, col4, col5, col6, col7 = st.columns(7, gap="small")
+    with col1:
+        st.write("RISK")
+        st.write("##")
+        st.write("OPENED")
+        st.write("FIXED")
+    with col2:
+        st.write("PRIOR")
+        prior_open = st.number_input("", value=0, step=1, key = "prior_open")
+        prior_fixed = st.number_input("", value=0, step=1, key = "prior_fixed")
+    with col3:
+        st.write("M1")
+        mone_open = st.number_input("", value=0, step=1, key = "mone_open")
+        mone_fixed = st.number_input("", value=0, step=1, key = "mone_fixed")
+    with col4:
+      st.write("M2")
+      mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")
+      mtwo_fixed = st.number_input("", value=0, step=1, key = "mtwo_fixed")
+    with col5:
+      st.write("M3")
+      mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")
+      mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")
+    with col6:
+      st.write("M4")
+      mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")
+      mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")
+    with col7:
+      st.write("TOTAL")
+      total_open = st.number_input("", value=0, step=1, key = "total_open")
+      total_fixed = st.number_input("", value=0, step=1, key = "total_fixed")
+
 
 # Display all user data for admin users
 def view_user_data():
@@ -393,7 +457,7 @@ def view_user_data():
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting"])  
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown"])  
 
     if choice == "Sign Up":
         signup()
@@ -403,6 +467,8 @@ def main():
         probability_words()
     elif choice == "Forecasting" and 'role' in st.session_state:
         forecast_elephant()
+    elif choice == "Burndown" and 'role' in st.session_state:
+        play_burndown()
     else:
         st.warning("Please log in to access the dashboard.")
 
