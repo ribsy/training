@@ -415,10 +415,10 @@ def play_burndown():
         st.write("RISK")
         st.write("###")
         st.write("OPENED")
+        st.write("###")
         st.write("FIXED")
     with col2:
         st.write("PRIOR")
-        st.write("###")
         prior_open = st.number_input("", value=0, step=1, key = "prior_open")
         prior_fixed = st.number_input("", value=0, step=1, key = "prior_fixed")
     with col3:
