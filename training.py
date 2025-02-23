@@ -527,7 +527,7 @@ def play_burndown():
 
     if st.session_state['show_graph']:
 
-        if st.session_state['total_fixed'] > st.session_state['total_open']
+        if st.session_state['total_fixed'] > st.session_state['total_open']:
             st.warning("You cannot have more fixed issues than open issues.  Please fix.")
 
         #prior_open = st.session_state['prior_open']
