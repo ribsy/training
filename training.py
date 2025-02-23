@@ -42,7 +42,7 @@ def init_db():
     ''')
     conn.commit()
 
-    #CREATE PROBS TABLE
+    #CREATE FORECAST TABLE
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS forecasts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -131,27 +131,28 @@ def login():
         else:
             st.error("Invalid username or password")
 
-def prob_chart_back(prob_val, name_val):
-    fig, ax = plt.subplots(figsize=(8, 2))
-    ax.hist(prob_val, bins=50, edgecolor='black')  # Adjust bins as needed
-    ax.set_xlim(0, 100)
-    ax.set_xlabel(name_val)
-    ax.set_ylabel(name_val)
-    ax.set_title('Histogram of Probability Words')
-    st.pyplot(fig)
+#def prob_chart_back(prob_val, name_val):
+#    fig, ax = plt.subplots(figsize=(8, 2))
+#    ax.hist(prob_val, bins=100, edgecolor='black')  # Adjust bins as needed
+#    #ax.set_xlim(0, 100)
+#    ax.set_xlabel(name_val)
+#    ax.set_ylabel(name_val)
+#    ax.set_title('Histogram of Probability Words')
+#    st.pyplot(fig)
 
 def prob_chart(prob_val, name_val):
     fig, ax = plt.subplots(figsize=(8, 2))
+    ax.set_xlim(0, 100)
 
     # Set black background
     ax.set_facecolor('black')
     fig.patch.set_facecolor('black')
 
     # Histogram with red bars and white edges
-    ax.hist(prob_val, bins=100, color='red')
+    ax.hist(prob_val, color='red')
 
     # Set white axis labels and ticks
-    ax.set_xlim(0, 100)
+    
     ax.tick_params(axis='x', colors='white')
     ax.tick_params(axis='y', colors='white')
     ax.set_xlabel(name_val, color='white')
@@ -173,10 +174,17 @@ def probability_words():
         st.warning("Please log in to access the dashboard.")
 
     # Create four sliders
-    slider1 = st.slider("Unlikely", 0, 100, 0)  # Default value is 0
-    slider2 = st.slider("Probable", 0, 100, 0)  # Default value is 0
-    slider3 = st.slider("Likely", 0, 100, 0)  # Default value is 0
-    slider4 = st.slider("Highly Likely", 0, 100, 0)  # Default value is 0
+    slider1 = st.slider("Unlikely", 0, 100, 0, key='slider_1')  # Default value is 0
+    slider2 = st.slider("Probable", 0, 100, 0, key='slider_2')  # Default value is 0
+    slider3 = st.slider("Likely", 0, 100, 0, key='slider_3')  # Default value is 0
+    slider4 = st.slider("Highly Likely", 0, 100, 0, key='slider_4')  # Default value is 0
+
+    st.session_state['slider1'] = slider1
+    st.session_state['slider2'] = slider2
+    st.session_state['slider3'] = slider3
+    st.session_state['slider4'] = slider4
+
+    #st.write(st.session_state['slider_values 
 
 
     if 'show_group_results' not in st.session_state:
@@ -185,7 +193,7 @@ def probability_words():
 
     # Write slider values to the database when a button is clicked
     if st.button("Save Slider Values"):
-        write_slider_values(slider1, slider2, slider3, slider4)
+        write_slider_values(st.session_state['slider1'], st.session_state['slider2'], st.session_state['slider3'], st.session_state['slider4'])
         st.success("Slider values saved to database!")
         st.session_state['show_group_results'] = True  # Set the session state variable to True
 
@@ -572,7 +580,13 @@ def play_burndown():
         # Display the plot in Streamlit
         st.pyplot(fig)
         
-
+# Display all user data for admin users
+def view_probs_data():
+    conn = sqlite3.connect('train.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM probs")
+    user_data = cursor.fetchall()
+    conn.close()
 
 
 # Display all user data for admin users
