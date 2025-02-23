@@ -2,3 +2,4 @@ streamlit
 db-sqlite3
 numpy
 matplotlib
+scipy
