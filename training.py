@@ -133,7 +133,7 @@ def login():
 
 def prob_chart_back(prob_val, name_val):
     fig, ax = plt.subplots(figsize=(8, 2))
-    ax.hist(prob_val, bins=100, edgecolor='black')  # Adjust bins as needed
+    ax.hist(prob_val, bins=50, edgecolor='black')  # Adjust bins as needed
     ax.set_xlim(0, 100)
     ax.set_xlabel(name_val)
     ax.set_ylabel(name_val)
