@@ -4,6 +4,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.stats import beta
 
 st.set_page_config(
         page_title="FORECASTER TRAINING",
@@ -400,47 +401,178 @@ def view_forecasts():
     # Display the DataFrame using st.dataframe()
     st.dataframe(df)
 
+def calculate_hdi(dist, mass=0.89, size=1000):
+    """
+    Calculates the approximate Highest Density Interval (HDI).
+
+    Args:
+        dist: A scipy.stats distribution object.
+        mass (float): The probability mass to include in the HDI.
+        size (int): The size of the x_vals array.
+
+    Returns:
+        A tuple containing the lower and upper bounds of the HDI.
+    """
+    x_vals = np.linspace(0, 1, size)
+    pdf = dist.pdf(x_vals)
+    pdf = pdf / pdf.sum()
+    idx = np.argsort(pdf)[::-1]
+    mass_cum = 0
+    indices = []
+    for i in idx:
+        mass_cum += pdf[i]
+        indices.append(i)
+        if mass_cum >= mass:
+            break
+    return x_vals[np.sort(indices)[[0, -1]]]
+
 def play_burndown():
     st.title("BURNDOWN")
-    markdown_box("HITS AND MISSES",
-    "This is just a bunch of text"
-    )
+
+    a = "You use burndown to measure the rate of risk elimination against a target SLA. " 
+    b = "Underneath the hood it uses a first seen time stamps and a closed or eliminated time stamp. " 
+    c = "Burndowns are really useful when you are focusing a critical class of risk and you want "
+    d = "to know if you are consistently keeping up with your SLA...over time."
+    burn_msg = a + b + c + d
+    markdown_box("THE HITS AND MISSES METRIC!", burn_msg)
 
     st.write("\n")
 
+    col_sla_1, col_sla_2 = st.columns(2)
+    with col_sla_1:
+        st.markdown("######")
+        st.markdown("##### SLA")
+    with col_sla_2:
+        sla_val = st.number_input("",value=.5, key='sla_val', step=0.05)
+        st.session_state['sla'] = sla_val
 
-    
-    col1, col2, col3, col4, col5, col6, col7 = st.columns(7, gap="small")
+    st.divider()
+
+    #with st.form(key='multi_row_form'):
+      # Header Row
+    col_header1, col_header3, col_header4, col_header5, col_header6, col_header7 = st.columns(6)
+    with col_header1:
+        st.markdown("##### RISK")
+    #with col_header2:
+    #    st.markdown("##### PRIOR")
+    with col_header3:
+        st.markdown("##### T1")
+    with col_header4:
+          st.markdown("##### T2")
+    with col_header5:
+        st.markdown("##### T3")
+    with col_header6:
+        st.markdown("##### T4")
+    with col_header7:
+        st.markdown("##### TOTAL")  
+
+    # ROW ONE
+    col1, col3, col4, col5, col6, col7 = st.columns(6)
     with col1:
-        st.write("RISK")
-        st.write("##")
-        st.write("OPENED")
-        st.write("#")
-        st.write("FIXED")
-    with col2:
-        st.write("PRIOR")
-        prior_open = st.number_input("", value=0, step=1, key = "prior_open")
-        prior_fixed = st.number_input("", value=0, step=1, key = "prior_fixed")
+        st.markdown("######")
+        st.markdown("OPENED")
+    #with col2:
+    #    prior_open = st.number_input("", value=1, step=1, key = "prior_open", disabled=True)
     with col3:
-        st.write("M1")
-        mone_open = st.number_input("", value=0, step=1, key = "mone_open")
-        mone_fixed = st.number_input("", value=0, step=1, key = "mone_fixed")
+        mone_open = st.number_input("", value=0, key = "mone_open")
     with col4:
-      st.write("M2")
-      mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")
-      mtwo_fixed = st.number_input("", value=0, step=1, key = "mtwo_fixed")
+        mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")        
     with col5:
-      st.write("M3")
-      mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")
-      mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")
+        mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")        
     with col6:
-      st.write("M4")
-      mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")
-      mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")
+        mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")        
     with col7:
-      st.write("TOTAL")
-      total_open = st.number_input("", value=0, step=1, key = "total_open")
-      total_fixed = st.number_input("", value=0, step=1, key = "total_fixed")
+        # Calculate total_open
+        total_open = mone_open + mtwo_open + mthree_open + mfour_open
+        st.session_state['total_open'] = total_open
+
+        #st.session_state['total_open_input'] = total_open - 1. # Address Prior
+        st.number_input("", value=None, step=1, key = "total_open", disabled = True)
+
+    # ROW TWO
+    col8, col10, col11, col12, col13, col14 = st.columns(6)
+    with col8:
+        st.markdown("######")
+        st.markdown("FIXED")
+    #with col9:
+    #    prior_fixed = st.number_input("", value=1, step=1, key = "prior_fixed", disabled=True)
+    with col10:
+        mone_fixed = st.number_input("", value=0, step=1, key = "mone_fixed")
+    with col11:
+        mtwo_fixed = st.number_input("", value=0, step=1, key = "mtwo_fixed")
+    with col12:
+        mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")        
+    with col13:
+        mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")        
+    with col14:
+        total_fixed = mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
+        st.session_state['total_fixed'] = total_fixed
+        #st.session_state['total_fixed_input'] = total_fixed - 1. # Address Prior
+        st.number_input("", value=None, step=1, key = "total_fixed", disabled=True) 
+    
+    #st.write(st.session_state['total_fixed'])
+    #st.write(st.session_state['total_open'])   
+
+    #total_open = prior_open + mone_open + mtwo_open + mthree_open + mfour_open
+    #total_fixed = prior_fixed + mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
+
+    if 'show_graph' not in st.session_state:
+        st.session_state['show_graph'] = False
+
+    if st.button("Calculate Burndown Rate"):
+         st.session_state['show_graph'] = True
+    else:
+        if st.session_state['total_open'] == 0:
+            st.session_state['show_graph'] = True
+
+    if st.session_state['show_graph']:
+
+        if st.session_state['total_fixed'] > st.session_state['total_open']
+            st.warning("You cannot have more fixed issues than open issues.  Please fix.")
+
+        #prior_open = st.session_state['prior_open']
+        #prior_fixed = st.session_state['prior_fixed']
+
+        # Get Total Values
+        #total_open = prior_open + mone_open + mtwo_open + mthree_open + mfour_open
+        #total_fixed = prior_fixed + mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
+
+        # Calculate Beta Distribution Parameters
+        alpha = st.session_state['total_fixed'] + 1
+        beta_val = st.session_state['total_open'] - st.session_state['total_fixed'] + 1
+
+        # Generate x values for the beta distribution
+        x = np.linspace(0, 1, 100)
+
+        # Calculate the probability density function (PDF)
+        dist = beta(alpha, beta_val)
+        pdf = dist.pdf(x)
+
+
+        # Calculate HDI
+        hdi = calculate_hdi(dist)
+
+        # Plot the beta distribution
+        fig, ax = plt.subplots()
+        #ax.plot(x, pdf, 'r-', lw=2, label=f'Beta({alpha:.2f}, {beta_val:.2f})')
+        ax.plot(x, pdf, 'r-', lw=2)
+
+        # Plot the HDI
+        ax.axvspan(hdi[0], hdi[1], color='gray', alpha=0.3, label='Confidence')
+
+        # Plot the vertical line
+        ax.axvline(st.session_state['sla'], color='black', linestyle='--', label=f'SLA = {round(st.session_state["sla"],3)}')
+
+        ax.set_xlabel('RATE (Probability)')
+        ax.set_ylabel('Strength (Density)')
+        ax.set_title('Burndown Rate With Uncertainty')
+        ax.legend()
+        ax.grid(True)
+
+        # Display the plot in Streamlit
+        st.pyplot(fig)
+        
+
 
 
 # Display all user data for admin users
@@ -456,7 +588,7 @@ def view_user_data():
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown"])  
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown"])
 
     if choice == "Sign Up":
         signup()
