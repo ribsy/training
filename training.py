@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import beta
 
+
 st.set_page_config(
         page_title="FORECASTER TRAINING",
         page_icon=":shark:",
