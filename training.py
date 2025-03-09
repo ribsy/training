@@ -679,6 +679,18 @@ def random_number_game_with_brier_score():
     """Streamlit interface for the random number game with Brier score."""
 
     st.title("Gambeling With The Rev Bayes")
+
+    st.markdown(
+      """
+      <style>
+      img {
+          border: 5px solid red; /* Adjust border width and color as needed */
+          border-radius: 10px; /* Optional: Add rounded corners */
+      }
+      </style>
+      """,
+      unsafe_allow_html=True,
+    )
     st.image("./data/rev_bayes_pool.png")
 
     # Initialize session state variables
