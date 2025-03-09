@@ -742,7 +742,7 @@ def random_number_game_with_brier_score():
                     st.session_state.counter += (round((100 - score)) * 1.5)
                   elif score <= 10:
                     st.session_state.counter += (round((100 - score)) * 1.2)
-                  else forecast_lower <= st.session_state.initial <= forecast_higher:
+                  else: 
                     st.session_state.counter += round(100 - score)
                 else:
                     st.session_state.counter += -round(score * 10)   
