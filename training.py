@@ -726,7 +726,7 @@ def random_number_game_with_brier_score():
     else:
         counter_placeholder.write(f"Money: ${st.session_state.counter}")
 
-    if st.session_state.initial_value is not None
+    if st.session_state.initial_value is not None:
 
             
         if st.button("Roll Ball"):
