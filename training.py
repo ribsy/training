@@ -645,7 +645,7 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
         range_width = upper_bound - lower_bound
         midpoint = (lower_bound + upper_bound) / 2
         distance_from_midpoint = abs(forecast_value - midpoint)
-        score = (distance_from_midpoint / range_width) ** 2
+        score = ((distance_from_midpoint / range_width) ** 2) * 100
     else:
         # If the forecast value is outside the bounds, apply a penalty
         score = 1  # Or another appropriate penalty
