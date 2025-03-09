@@ -626,32 +626,54 @@ def track_random_numbers(num_requests=1):
 
   return results
 
-def range_scoring_function(lower_bound, upper_bound, forecast_target):
-    """Calculates a Brier-like score for a range and forecast target, 
-       acting as a proper score.
+def range_scoring_function(lower_bound, upper_bound, forecast_value):
+    """Calculates a Brier-like score for a range and forecast value, 
+       acting as a proper score. Rewards tighter ranges and 
+       penalizes values outside the range based on distance.
+       Penalizes wide ranges even if midpoint is close to forecast value.
+       Penalizes ranges based on width when the forecast is the midpoint
+       Rewards tighter ranges that contain forecast value better than small distance from midpoint
 
     Args:
         lower_bound: The lower bound of the range.
         upper_bound: The upper bound of the range.
-        forecast_target: The value to be scored within the range.
+        forecast_value: The value to be scored within the range.
 
     Returns:
         The Brier-like score, a value between 0 and infinity.
         Lower scores indicate a better prediction.
     """
     # Check if the forecast value falls within the bounds
-    if lower_bound <= forecast_target <= upper_bound:
+    if lower_bound <= forecast_value <= upper_bound:
         # Calculate the normalized distance from the midpoint
         range_width = upper_bound - lower_bound
         midpoint = (lower_bound + upper_bound) / 2
-        distance_from_midpoint = abs(forecast_target - midpoint)
-        score = ((distance_from_midpoint / range_width) ** 2) * 100
-        score = round(score,3)
-    else:
-        # If the forecast value is outside the bounds, apply a penalty
-        score = 1  # Or another appropriate penalty
+        distance_from_midpoint = abs(forecast_value - midpoint)
 
-    return score
+        # Prevent zero score for midpoint
+        if distance_from_midpoint == 0 and range_width > 0:
+            score = range_width / 100  # Penalize based on range width
+        else:
+            score = (distance_from_midpoint / range_width) ** 2
+
+        # Reward tighter ranges (add range width as a penalty)
+        score += range_width / 100  # Adjust the divisor to control the impact
+        #score = score * range_width /10 # reward tighter ranges, scale by range width ->REMOVED 
+
+        # Penalize wide ranges even if midpoint is close 
+        if range_width > 20:  # Adjust threshold (20 here) as needed
+            score += (range_width - 20) / 50  # Adjust divisor to control penalty scaling
+
+    else:
+        # If the forecast value is outside the bounds, apply a penalty based on distance
+        if forecast_value < lower_bound:
+            distance_outside = lower_bound - forecast_value
+        else:  # forecast_value > upper_bound
+            distance_outside = forecast_value - upper_bound
+
+        score = 1 + (distance_outside / 10)  # Adjust the divisor to control the penalty scaling
+
+    return round(score,3)
 
 def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
