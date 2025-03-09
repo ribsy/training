@@ -739,9 +739,9 @@ def random_number_game_with_brier_score():
                 st.write(f"You must Play A New Game before you can Make A Bet.")
 
         # Display all previous scores
-        st.write("Previous Scores:")
-        for i, score in enumerate(st.session_state.scores):
-            st.write(f"Bet {i + 1}: {score}")
+        #st.write("Previous Scores:")
+        #for i, score in enumerate(st.session_state.scores):
+        #   st.write(f"Bet {i + 1}: {score}")
 
         # Display all previous forecasts
         st.write("Previous Forecasts:")
