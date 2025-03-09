@@ -783,10 +783,11 @@ def random_number_game_with_brier_score():
             else:
                 st.write(f"You must Play A New Game before you can Make A Bet.")
 
+        
+        st.divider()    
         # Guess Ball Location input field
         guess_location = st.number_input("Guess Ball Location", value=0)
 
-        st.divider()
         if st.button("Guess Location"):
             if st.session_state.initial_value is not None:
                 # Calculate absolute difference
