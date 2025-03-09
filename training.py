@@ -738,7 +738,7 @@ def random_number_game_with_brier_score():
                 
                 st.write(f"Modified Brier Score: {score}")
                 counter_placeholder.write(f"Final Money: ${st.session_state.counter}")
-                st.write("Original Ball Location: {st.session_state.initial_value}")
+                st.write(f"Original Ball Location: {st.session_state.initial_value}")
             else:
                 st.write(f"You must Play A New Game before you can Make A Bet.")
 
