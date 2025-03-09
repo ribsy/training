@@ -697,6 +697,7 @@ def random_number_game_with_brier_score():
 
     st.write(f"Money: ${st.session_state.counter}")
     if st.button("Play A New Game"):
+        st.session_state.counter = 100
         st.session_state.initial_value = random_number_generator()
         st.session_state.results = [st.session_state.initial_value]
         st.session_state.scores = []  # Clear scores when starting a new game
