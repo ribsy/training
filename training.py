@@ -757,7 +757,7 @@ def random_number_game_with_brier_score():
         forecast_lower = st.number_input("Forecast Lower", value=0)
         forecast_higher = st.number_input("Forecast Higher", value=0)
 
-        if st.button("Make A Bet"):
+        if st.button("Forecast Range"):
             if st.session_state.initial_value is not None:
                 st.session_state.lower_bounds.append(forecast_lower)  # Store lower bound
                 st.session_state.upper_bounds.append(forecast_higher)  # Store upper bound
@@ -782,7 +782,7 @@ def random_number_game_with_brier_score():
                 counter_placeholder.write(f"Final Money: ${round(st.session_state.counter)}")
                 st.write(f"Original Ball Location: {st.session_state.initial_value}")
             else:
-                st.write(f"You must Play A New Game before you can Make A Bet.")
+                st.write(f"You must Play A New Game before you can Forecast A Range.")
 
         
         st.divider()    
