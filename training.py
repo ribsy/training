@@ -696,8 +696,8 @@ def random_number_game_with_brier_score():
         st.session_state.counter = 100
 
     counter_placeholder = st.empty()
-    if not st.button("Play A New Game"):
-        counter_placeholder.write(f"Money: ${st.session_state.counter}")
+
+    counter_placeholder.write(f"Money: ${st.session_state.counter}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
