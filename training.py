@@ -703,6 +703,18 @@ def random_number_game_with_brier_score():
 
     with col2:
         if st.session_state.initial_value is not None:
+            # Make "Make A Bet" button green
+            st.markdown(
+                """
+                <style>
+                div.stButton > button:first-child {
+                    background-color: red;
+                    color: white;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
             if st.button("Keep Playing"):
                 result = track_random_numbers(1)[1]
                 st.session_state.results.append(result)
