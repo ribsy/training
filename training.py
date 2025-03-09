@@ -726,25 +726,7 @@ def random_number_game_with_brier_score():
     else:
         counter_placeholder.write(f"Money: ${st.session_state.counter}")
 
-    if st.session_state.initial_value is not None:
-
-        # Guess Ball Location input field
-        guess_location = st.number_input("Guess Ball Location", value=0)
-
-        if st.button("Guess Location"):
-            if st.session_state.initial_value is not None:
-                # Calculate absolute difference
-                difference = abs(guess_location - st.session_state.initial_value)
-
-                # Subtract difference * 5 from counter
-                st.session_state.counter -= difference * 5
-
-                # Display updated counter
-                st.write(f"Money: ${st.session_state.counter}")
-                st.write(f"Original Ball Location: {st.session_state.initial_value}") # Added to reveal after Guess Location
-
-            else:
-                st.write("You must start a new game before guessing.")
+    if st.session_state.initial_value is not None
 
             
         if st.button("Roll Ball"):
@@ -800,6 +782,24 @@ def random_number_game_with_brier_score():
                 st.write(f"Original Ball Location: {st.session_state.initial_value}")
             else:
                 st.write(f"You must Play A New Game before you can Make A Bet.")
+
+        # Guess Ball Location input field
+        guess_location = st.number_input("Guess Ball Location", value=0)
+
+        if st.button("Guess Location"):
+            if st.session_state.initial_value is not None:
+                # Calculate absolute difference
+                difference = abs(guess_location - st.session_state.initial_value)
+
+                # Subtract difference * 5 from counter
+                st.session_state.counter -= difference * 5
+
+                # Display updated counter
+                st.write(f"Money: ${st.session_state.counter}")
+                st.write(f"Original Ball Location: {st.session_state.initial_value}") # Added to reveal after Guess Location
+
+            else:
+                st.write("You must start a new game before guessing.")
 
         # Display all previous scores
         #st.write("Previous Scores:")
