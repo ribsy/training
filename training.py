@@ -720,7 +720,7 @@ def random_number_game_with_brier_score():
               if result != "equal":  # Check if result is not equal to initial value
                   break  # Exit the loop if result is valid
           st.session_state.results.append(result)
-          st.write(f"Result: {result}")
+          #st.write(f"Result: {result}")
 
         # Display counter as dollar
         st.write("Ball Locations:", ", ".join(st.session_state.results[1:]))
