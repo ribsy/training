@@ -673,7 +673,7 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
 
         score = 1 + (distance_outside / 10)  # Adjust the divisor to control the penalty scaling
 
-    return round(score,3)
+    return round(score,3) * 10
 
 def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
