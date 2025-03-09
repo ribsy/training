@@ -782,7 +782,7 @@ def random_number_game_with_brier_score():
                   else: 
                     st.session_state.counter += round(100 - score)/st.session_state.forecast_count
                 else:
-                    st.session_state.counter += -round(score * 3)   
+                    st.session_state.counter += -round(score * 1.5)   
                     
                 st.session_state.scores.append(score)  # Append score to the list
                 
