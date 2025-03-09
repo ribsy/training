@@ -709,19 +709,19 @@ def random_number_game_with_brier_score():
 
     counter_placeholder = st.empty()
 
-    counter_placeholder.write(f"Money: ${st.session_state.counter}")
+    #counter_placeholder.write(f"Money: ${st.session_state.counter}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
-        counter_placehoder = 100
-        #st.write(f"Money: ${st.session_state.counter}")
+        st.write(f"Money: ${st.session_state.counter}")
 
         st.session_state.initial_value = random_number_generator()
         st.session_state.results = [st.session_state.initial_value]
         st.session_state.scores = []  # Clear scores when starting a new game
         st.session_state.lower_bounds = []  # Clear lower bounds when starting a new game
         st.session_state.upper_bounds = []  # Clear upper bounds when starting a new game
-        #st.write(f"Initial value: {st.session_state.initial_value}")
+    else:
+        counter_placeholder.write(f"Money: ${st.session_state.counter}")
 
     if st.session_state.initial_value is not None:
         if st.button("Roll Ball"):
