@@ -717,7 +717,7 @@ def random_number_game_with_brier_score():
         st.session_state.counter = 100
         st.session_state.ball_count = 0
         #st.write(f"Money: ${st.session_state.counter}")
-        counter_placeholder.write(f"Test: ${st.session_state.counter}")
+        counter_placeholder.write(f"Money: ${st.session_state.counter}")
 
         st.session_state.initial_value = random_number_generator()
         st.session_state.results = [st.session_state.initial_value]
