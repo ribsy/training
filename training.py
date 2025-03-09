@@ -699,7 +699,7 @@ def random_number_game_with_brier_score():
       st.session_state.results.append(result)
       st.write(f"Result: {result}")
 
-    st.write("Previous Results:", st.session_state.results)
+    st.write("Previous Results:", st.session_state.results[1:])
 
     forecast_lower = st.number_input("Forecast Lower", value=0)
     forecast_higher = st.number_input("Forecast Higher", value=0)
