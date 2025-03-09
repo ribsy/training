@@ -727,6 +727,26 @@ def random_number_game_with_brier_score():
         counter_placeholder.write(f"Money: ${st.session_state.counter}")
 
     if st.session_state.initial_value is not None:
+
+        # Guess Ball Location input field
+        guess_location = st.number_input("Guess Ball Location", value=0)
+
+        if st.button("Guess Location"):
+            if st.session_state.initial_value is not None:
+                # Calculate absolute difference
+                difference = abs(guess_location - st.session_state.initial_value)
+
+                # Subtract difference * 5 from counter
+                st.session_state.counter -= difference * 5
+
+                # Display updated counter
+                st.write(f"Money: ${st.session_state.counter}")
+                st.write(f"Original Ball Location: {st.session_state.initial_value}") # Added to reveal after Guess Location
+
+            else:
+                st.write("You must start a new game before guessing.")
+
+            
         if st.button("Roll Ball"):
            
           # Increment ball count
