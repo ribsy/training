@@ -728,6 +728,7 @@ def random_number_game_with_brier_score():
 
     if st.session_state.initial_value is not None:
 
+        st.divider()
             
         if st.button("Roll Ball"):
            
