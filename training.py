@@ -735,7 +735,7 @@ def random_number_game_with_brier_score():
                 score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
                 score = round(score,3)
 
-                if forecast_lower <= st.session_state.initial <= forecast_higher:
+                if forecast_lower <= st.session_state.initial_value <= forecast_higher:
                   if score <= .5:
                     st.session_state.counter += (round((100 - score)) * 2)
                   elif score <= 1:
