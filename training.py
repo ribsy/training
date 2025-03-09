@@ -691,7 +691,7 @@ def random_number_game_with_brier_score():
     st.session_state.initial_value = random_number_generator()
     st.session_state.results = [st.session_state.initial_value]
     st.session_state.scores = []  # Clear scores when starting a new game
-    st.write(f"Initial value: {st.session_state.initial_value}")
+    #st.write(f"Initial value: {st.session_state.initial_value}")
 
   if st.session_state.initial_value is not None:
     if st.button("Keep Playing"):
