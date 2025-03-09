@@ -681,10 +681,6 @@ def random_number_game_with_brier_score():
     st.title("Gambeling With The Rev Bayes")
     st.image("./data/rev_bayes_pool.png")
 
-    st.write(f"Modified Brier Score: {score}")
-    st.write(f"Final Money: ${st.session_state.counter}")
-    st.write("Original Ball Location: ${st.session_state.initial_value}")
-
     # Initialize session state variables
     if "initial_value" not in st.session_state:
         st.session_state.initial_value = None
@@ -698,6 +694,10 @@ def random_number_game_with_brier_score():
         st.session_state.upper_bounds = []
     if "counter" not in st.session_state:
         st.session_state.counter = 100
+
+    st.write(f"Modified Brier Score: {score}")
+    st.write(f"Final Money: ${st.session_state.counter}")
+    st.write("Original Ball Location: ${st.session_state.initial_value}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
