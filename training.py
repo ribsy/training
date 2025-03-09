@@ -603,7 +603,7 @@ def random_number_generator():
   """Generates a random number between 1 and 40 (non-inclusive)."""
   return random.randint(1, 43)
 
-def track_random_numbers(num_requests=1, initial_value):
+def track_random_numbers(num_requests=1, initial_value=1):
   """Generates an initial random number and compares subsequent numbers.
 
   Args:
