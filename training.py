@@ -678,7 +678,17 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
 def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
 
-  st.title("Random Number Game with Brier Score")
+  st.title("Playing Pool With The Reverened Bayes")
+  st.write("Your job is to make the best range based forecast in terms of where the white ball is on the table.")
+  st.write("- A pool table is 40 inches wide. That means the ball can land at inch 1 or inch 39.")
+  st.write("- When you hit the 'Keep Playing' button a ball is randomly rolled onto the table.")
+  st.write("- The application will announce if the ball landed to the 'left' or 'right' of the white ball.")
+  st.write("- Your job is to apply a best guess range that contains the white ball.")
+  st.write("- The smaller your range that actually contains the white ball, the better your score.")
+  st.write("- That means you will want to hit the 'Keep Plaing' button...but there is a catch.")
+  st.write("- Everytime you hit that button you lose $5...")
+  st.write("- And the further off your range is the more you can potentially lose.")
+  st.write("- But you can gain big if you have a tight range that has the white ball in it.")
 
   if "initial_value" not in st.session_state:
     st.session_state.initial_value = None
