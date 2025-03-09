@@ -734,7 +734,19 @@ def random_number_game_with_brier_score():
                 st.session_state.upper_bounds.append(forecast_higher)  # Store upper bound
                 score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
                 score = round(score,3)
-                st.session_state.counter += (100 - score)
+
+                if forecast_lower <= st.session_state.initial <= forecast_higher:
+                  if score <= .5:
+                    st.session_state.counter += (round((100 - score)) * 2)
+                  elif score <= 1:
+                    st.session_state.counter += (round((100 - score)) * 1.5)
+                  elif score <= 10:
+                    st.session_state.counter += (round((100 - score)) * 1.2)
+                  else forecast_lower <= st.session_state.initial <= forecast_higher:
+                    st.session_state.counter += round(100 - score)
+                else:
+                    st.session_state.counter += -round(score * 10)   
+                    
                 st.session_state.scores.append(score)  # Append score to the list
                 
                 st.write(f"Modified Brier Score: {score}")
