@@ -706,6 +706,8 @@ def random_number_game_with_brier_score():
         st.session_state.upper_bounds = []
     if "counter" not in st.session_state:
         st.session_state.counter = 100
+    if "ball_count" not in st.session_state:
+        st.session_state.ball_count = 0
 
     counter_placeholder = st.empty()
 
@@ -725,8 +727,15 @@ def random_number_game_with_brier_score():
 
     if st.session_state.initial_value is not None:
         if st.button("Roll Ball"):
-          # Decrement counter
-          st.session_state.counter -= 5
+           # Increment ball count
+            st.session_state.ball_count += 1
+
+            # Subtract from counter based on ball count
+            if st.session_state.ball_count > 5:
+                st.session_state.counter -= 10
+            else:
+                st.session_state.counter -= 5
+                    
           counter_placeholder.write(f"Money: ${st.session_state.counter}")
           while True:  # Loop until a valid result is generated
               result = track_random_numbers(1)[1]  # Get "right" or "left"
