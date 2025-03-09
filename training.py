@@ -708,6 +708,8 @@ def random_number_game_with_brier_score():
         st.session_state.counter = 100
     if "ball_count" not in st.session_state:
         st.session_state.ball_count = 0
+    if "forecast_count" not in st.session_state:
+        st.session_state.forecast_count = 0
 
     counter_placeholder = st.empty()
 
@@ -761,6 +763,10 @@ def random_number_game_with_brier_score():
 
         if st.button("Forecast Range"):
             if st.session_state.initial_value is not None:
+
+                # Increment forecast counter
+                st.session_state.forecast_count += 1
+                    
                 st.session_state.lower_bounds.append(forecast_lower)  # Store lower bound
                 st.session_state.upper_bounds.append(forecast_higher)  # Store upper bound
                 score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
@@ -768,13 +774,13 @@ def random_number_game_with_brier_score():
 
                 if forecast_lower <= st.session_state.initial_value <= forecast_higher:
                   if score <= .5:
-                    st.session_state.counter += (round((100 - score)) * 2)
+                    st.session_state.counter += (round((100 - score)) * 2)/st.session_state.forecast_count
                   elif score <= 1:
-                    st.session_state.counter += (round((100 - score)) * 1.5)
+                    st.session_state.counter += (round((100 - score)) * 1.5)/st.session_state.forecast_count
                   elif score <= 10:
-                    st.session_state.counter += (round((100 - score)) * 1.2)
+                    st.session_state.counter += (round((100 - score)) * 1.2)/st.session_state.forecast_count
                   else: 
-                    st.session_state.counter += round(100 - score)
+                    st.session_state.counter += round(100 - score)/st.session_state.forecast_count
                 else:
                     st.session_state.counter += -round(score * 10)   
                     
@@ -782,7 +788,9 @@ def random_number_game_with_brier_score():
                 
                 st.write(f"Modified Brier Score: {score}")
                 counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
-                st.write(f"Original Ball Location: {st.session_state.initial_value}")
+
+                
+                
             else:
                 st.write(f"You must Play A New Game before you can Forecast A Range.")
 
