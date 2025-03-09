@@ -695,6 +695,7 @@ def random_number_game_with_brier_score():
     if "counter" not in st.session_state:
         st.session_state.counter = 100
 
+    st.write(f"Money: ${st.session_state.counter}")
     if st.button("Play A New Game"):
         st.session_state.initial_value = random_number_generator()
         st.session_state.results = [st.session_state.initial_value]
@@ -714,8 +715,7 @@ def random_number_game_with_brier_score():
           st.session_state.results.append(result)
           st.write(f"Result: {result}")
 
-        # Display counter as dollars
-        st.write(f"Money: ${st.session_state.counter}")
+        # Display counter as dollar
         st.write("Ball Locations:", ", ".join(st.session_state.results[1:]))
 
         forecast_lower = st.number_input("Forecast Lower", value=0)
