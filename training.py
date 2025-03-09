@@ -711,7 +711,7 @@ def random_number_game_with_brier_score():
 
     counter_placeholder = st.empty()
 
-    counter_placeholder.write(f"Money Test: ${st.session_state.counter}")
+    counter_placeholder.write(f"Money: ${st.session_state.counter}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
@@ -781,7 +781,7 @@ def random_number_game_with_brier_score():
                 st.session_state.scores.append(score)  # Append score to the list
                 
                 st.write(f"Modified Brier Score: {score}")
-                counter_placeholder.write(f"Final Money: ${round(st.session_state.counter)}")
+                counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
                 st.write(f"Original Ball Location: {st.session_state.initial_value}")
             else:
                 st.write(f"You must Play A New Game before you can Forecast A Range.")
@@ -800,7 +800,8 @@ def random_number_game_with_brier_score():
                 st.session_state.counter -= difference * 5
 
                 # Display updated counter
-                st.write(f"Money: ${st.session_state.counter}")
+                #st.write(f"Money: ${st.session_state.counter}")
+                counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
                 st.write(f"Original Ball Location: {st.session_state.initial_value}") # Added to reveal after Guess Location
 
             else:
