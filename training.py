@@ -701,7 +701,7 @@ def random_number_game_with_brier_score():
         #st.write(f"Initial value: {st.session_state.initial_value}")
 
     if st.session_state.initial_value is not None:
-        if st.button("Keep Playing"):
+        if st.button("Roll Ball"):
             result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
             st.session_state.results.append(result)
             st.write(f"Result: {result}")
