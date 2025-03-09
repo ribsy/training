@@ -689,7 +689,7 @@ def random_number_game_with_brier_score():
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown","Play Pool"])
 
     if choice == "Sign Up":
         signup()
