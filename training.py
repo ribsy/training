@@ -695,17 +695,17 @@ def random_number_game_with_brier_score():
 
     with col1:
         # Make "Make A Bet" button green
-            st.markdown(
-                """
-                <style>
-                div.stButton > button:first-child {
-                    background-color: green;
-                    color: white;
-                }
-                </style>
-                """,
-                unsafe_allow_html=True,
-            )
+        st.markdown(
+            """
+            <style>
+            div.stButton > button:first-child {
+                background-color: blue;
+                color: white;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
         if st.button("Play A New Game"):
             st.session_state.initial_value = random_number_generator()
             st.session_state.results = [st.session_state.initial_value]
