@@ -603,7 +603,7 @@ def random_number_generator():
   """Generates a random number between 1 and 40 (non-inclusive)."""
   return random.randint(1, 43)
 
-def track_random_numbers(num_requests=1):
+def track_random_numbers(num_requests=1, initial_value):
   """Generates an initial random number and compares subsequent numbers.
 
   Args:
@@ -612,7 +612,7 @@ def track_random_numbers(num_requests=1):
   Returns:
     A list containing the initial value and "right" or "left" for each subsequent number.
   """
-  initial_value = random_number_generator()
+  #initial_value = random_number_generator()
   results = [initial_value]
 
   for _ in range(num_requests):
@@ -748,7 +748,7 @@ def random_number_game_with_brier_score():
                     
           counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
           while True:  # Loop until a valid result is generated
-              result = track_random_numbers(1)[1]  # Get "right" or "left"
+              result = track_random_numbers(1, st.session_state.initial_value)[1]  # Get "right" or "left"
               if result != "equal":  # Check if result is not equal to initial value
                   break  # Exit the loop if result is valid
           st.session_state.results.append(result)
