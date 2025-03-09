@@ -678,7 +678,7 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
 def random_number_game_with_brier_score():
     """Streamlit interface for the random number game with Brier score."""
 
-    st.title("Random Number Game with Brier Score")
+    st.title("Gambeling With The Rev Bayes")
     st.image("./data/rev_bayes_pool.png")
 
     # Initialize session state variables
