@@ -695,9 +695,8 @@ def random_number_game_with_brier_score():
     if "counter" not in st.session_state:
         st.session_state.counter = 100
 
-    st.write(f"Modified Brier Score: {score}")
-    st.write(f"Final Money: ${st.session_state.counter}")
-    st.write("Original Ball Location: ${st.session_state.initial_value}")
+    counter_placeholder = st.empty()
+    counter_placeholder.write(f"Money: ${st.session_state.counter}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
@@ -714,7 +713,7 @@ def random_number_game_with_brier_score():
         if st.button("Roll Ball"):
           # Decrement counter
           st.session_state.counter -= 5
-          st.write(f"Money: ${st.session_state.counter}")
+          counter_placeholder.write(f"Money: ${st.session_state.counter}")
           while True:  # Loop until a valid result is generated
               result = track_random_numbers(1)[1]  # Get "right" or "left"
               if result != "equal":  # Check if result is not equal to initial value
@@ -738,7 +737,7 @@ def random_number_game_with_brier_score():
                 st.session_state.scores.append(score)  # Append score to the list
                 
                 st.write(f"Modified Brier Score: {score}")
-                st.write(f"Final Money: ${st.session_state.counter}")
+                counter_placeholder.write(f"Final Money: ${st.session_state.counter}")
                 st.write("Original Ball Location: ${st.session_state.initial_value}")
             else:
                 st.write(f"You must Play A New Game before you can Make A Bet.")
