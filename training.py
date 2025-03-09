@@ -1,7 +1,10 @@
+%%writefile app.py
+
 import sqlite3
 import hashlib
 import streamlit as st
 import numpy as np
+import random
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import beta
@@ -152,7 +155,7 @@ def prob_chart(prob_val, name_val):
     ax.hist(prob_val, color='red')
 
     # Set white axis labels and ticks
-    
+
     ax.tick_params(axis='x', colors='white')
     ax.tick_params(axis='y', colors='white')
     ax.set_xlabel(name_val, color='white')
@@ -184,7 +187,7 @@ def probability_words():
     st.session_state['slider3'] = slider3
     st.session_state['slider4'] = slider4
 
-    #st.write(st.session_state['slider_values 
+    #st.write(st.session_state['slider_values
 
 
     if 'show_group_results' not in st.session_state:
@@ -437,8 +440,8 @@ def calculate_hdi(dist, mass=0.89, size=1000):
 def play_burndown():
     st.title("BURNDOWN")
 
-    a = "You use burndown to measure the rate of risk elimination against a target SLA. " 
-    b = "Underneath the hood it uses a first seen time stamps and a closed or eliminated time stamp. " 
+    a = "You use burndown to measure the rate of risk elimination against a target SLA. "
+    b = "Underneath the hood it uses a first seen time stamps and a closed or eliminated time stamp. "
     c = "Burndowns are really useful when you are focusing a critical class of risk and you want "
     d = "to know if you are consistently keeping up with your SLA...over time."
     burn_msg = a + b + c + d
@@ -472,7 +475,7 @@ def play_burndown():
     with col_header6:
         st.markdown("##### T4")
     with col_header7:
-        st.markdown("##### TOTAL")  
+        st.markdown("##### TOTAL")
 
     # ROW ONE
     col1, col3, col4, col5, col6, col7 = st.columns(6)
@@ -484,11 +487,11 @@ def play_burndown():
     with col3:
         mone_open = st.number_input("", value=0, key = "mone_open")
     with col4:
-        mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")        
+        mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")
     with col5:
-        mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")        
+        mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")
     with col6:
-        mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")        
+        mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")
     with col7:
         # Calculate total_open
         total_open = mone_open + mtwo_open + mthree_open + mfour_open
@@ -509,17 +512,17 @@ def play_burndown():
     with col11:
         mtwo_fixed = st.number_input("", value=0, step=1, key = "mtwo_fixed")
     with col12:
-        mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")        
+        mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")
     with col13:
-        mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")        
+        mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")
     with col14:
         total_fixed = mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
         st.session_state['total_fixed'] = total_fixed
         #st.session_state['total_fixed_input'] = total_fixed - 1. # Address Prior
-        st.number_input("", value=None, step=1, key = "total_fixed", disabled=True) 
-    
+        st.number_input("", value=None, step=1, key = "total_fixed", disabled=True)
+
     #st.write(st.session_state['total_fixed'])
-    #st.write(st.session_state['total_open'])   
+    #st.write(st.session_state['total_open'])
 
     #total_open = prior_open + mone_open + mtwo_open + mthree_open + mfour_open
     #total_fixed = prior_fixed + mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
@@ -579,7 +582,7 @@ def play_burndown():
 
         # Display the plot in Streamlit
         st.pyplot(fig)
-        
+
 # Display all user data for admin users
 def view_probs_data():
     conn = sqlite3.connect('train.db')
@@ -597,6 +600,65 @@ def view_user_data():
     user_data = cursor.fetchall()
     conn.close()
 
+def random_number_generator():
+  """Generates a random number between 1 and 40 (non-inclusive)."""
+  return random.randint(1, 39)
+
+def track_random_numbers(num_requests=1):
+  """Generates an initial random number and compares subsequent numbers.
+
+  Args:
+    num_requests: The number of additional random numbers to generate.
+
+  Returns:
+    A list containing the initial value and "right" or "left" for each subsequent number.
+  """
+  initial_value = random_number_generator()
+  results = [initial_value]
+
+  for _ in range(num_requests):
+    new_value = random_number_generator()
+    if new_value > initial_value:
+      results.append("right")
+    elif new_value < initial_value:
+      results.append("left")
+    else:
+      results.append("equal")  # Handle the case where new_value equals initial_value
+
+  return results
+
+def random_number_game_with_brier_score():
+  """Streamlit interface for the random number game with Brier score."""
+
+  st.title("Random Number Game with Brier Score")
+
+  if "initial_value" not in st.session_state:
+    st.session_state.initial_value = None
+  if "results" not in st.session_state:
+    st.session_state.results = []
+
+  if st.button("Play A New Game"):
+    st.session_state.initial_value = random_number_generator()
+    st.session_state.results = [st.session_state.initial_value]
+    st.write(f"Initial value: {st.session_state.initial_value}")
+
+  if st.session_state.initial_value is not None:
+    if st.button("Keep Playing"):
+      result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
+      st.session_state.results.append(result)
+      st.write(f"Result: {result}")
+
+    st.write("Previous Results:", st.session_state.results)
+
+    forecast_lower = st.number_input("Forecast Lower", value=0)
+    forecast_higher = st.number_input("Forecast Higher", value=0)
+
+    if st.button("Make A Bet"):
+      if st.session_state.initial_value is not None:
+          score = modified_brier_score(forecast_lower, forecast_higher, 1, 39)  # Assume actual range is 1 to 39
+          st.write(f"Modified Brier Score: {score}")
+      else:
+          st.write(f"You must Play A New Game before you can Make A Bet.")
 
 # Main function to handle different states
 def main():
@@ -614,6 +676,8 @@ def main():
         forecast_elephant()
     elif choice == "Burndown" and 'role' in st.session_state:
         play_burndown()
+    elif choice == "Play Pool" and 'role' in st.session_state:
+        random_number_game_with_brier_score()
     else:
         st.warning("Please log in to access the dashboard.")
 
