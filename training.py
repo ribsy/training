@@ -753,6 +753,7 @@ def random_number_game_with_brier_score():
         # Display counter as dollar
         st.write("Ball Locations:", ", ".join(st.session_state.results[1:]))
 
+        st.divider()
         forecast_lower = st.number_input("Forecast Lower", value=0)
         forecast_higher = st.number_input("Forecast Higher", value=0)
 
