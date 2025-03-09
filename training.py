@@ -713,13 +713,13 @@ def random_number_game_with_brier_score():
 
     counter_placeholder = st.empty()
 
-    counter_placeholder.write(f"Money: ${st.session_state.counter}")
+    counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
         st.session_state.ball_count = 0
         #st.write(f"Money: ${st.session_state.counter}")
-        counter_placeholder.write(f"Money: ${st.session_state.counter}")
+        counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
 
         st.session_state.initial_value = random_number_generator()
         st.session_state.results = [st.session_state.initial_value]
@@ -727,7 +727,7 @@ def random_number_game_with_brier_score():
         st.session_state.lower_bounds = []  # Clear lower bounds when starting a new game
         st.session_state.upper_bounds = []  # Clear upper bounds when starting a new game
     else:
-        counter_placeholder.write(f"Money: ${st.session_state.counter}")
+        counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
 
     if st.session_state.initial_value is not None:
 
@@ -746,7 +746,7 @@ def random_number_game_with_brier_score():
           else:
             st.session_state.counter -= 5    
                     
-          counter_placeholder.write(f"Money: ${st.session_state.counter}")
+          counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
           while True:  # Loop until a valid result is generated
               result = track_random_numbers(1)[1]  # Get "right" or "left"
               if result != "equal":  # Check if result is not equal to initial value
