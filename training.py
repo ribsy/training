@@ -678,55 +678,53 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
 def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
 
-  st.title("Playing Pool With The Reverened Bayes")
+  st.title("Playing Pool With The Rev Bayes")
   st.image("./data/rev_bayes_pool.png")
-  #st.write("Your job is to make the best range based forecast in terms of where the white ball is on the table.")
-  #st.write("- A pool table is 40 inches wide. That means the ball can land at inch 1 or inch 39.")
-  #st.write("- When you hit the 'Keep Playing' button a ball is randomly rolled onto the table.")
-  #st.write("- The application will announce if the ball landed to the 'left' or 'right' of the white ball.")
-  #st.write("- Your job is to apply a best guess range that contains the white ball.")
-  #st.write("- The smaller your range that actually contains the white ball, the better your score.")
-  #st.write("- That means you will want to hit the 'Keep Plaing' button...but there is a catch.")
-  #st.write("- Everytime you hit that button you lose $5...")
-  #st.write("- And the further off your range is the more you can potentially lose.")
-  #st.write("- But you can gain big if you have a tight range that has the white ball in it.")
 
   if "initial_value" not in st.session_state:
     st.session_state.initial_value = None
   if "results" not in st.session_state:
     st.session_state.results = []
-  if "scores" not in st.session_state:  # Initialize scores list in session state
+  if "scores" not in st.session_state:
     st.session_state.scores = []
+    
+  # Put buttons on one line using st.columns
+  col1, col2, col3 = st.columns(3)
 
-  if st.button("Play A New Game"):
-    st.session_state.initial_value = random_number_generator()
-    st.session_state.results = [st.session_state.initial_value]
-    st.session_state.scores = []  # Clear scores when starting a new game
-    st.write(f"Initial value: {st.session_state.initial_value}")
+  with col1:
+      if st.button("Play A New Game"):
+          st.session_state.initial_value = random_number_generator()
+          st.session_state.results = [st.session_state.initial_value]
+          st.session_state.scores = []  # Clear scores when starting a new game
+          st.write(f"Initial value: {st.session_state.initial_value}")
 
-  if st.session_state.initial_value is not None:
-    if st.button("Keep Playing"):
-      result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
-      st.session_state.results.append(result)
-      st.write(f"Result: {result}")
-
-    st.write("Previous Results:", st.session_state.results)
-
-    forecast_lower = st.number_input("Forecast Lower", value=0)
-    forecast_higher = st.number_input("Forecast Higher", value=0)
-
-    if st.button("Make A Bet"):
+  with col2:
       if st.session_state.initial_value is not None:
-          score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
-          st.session_state.scores.append(score)  # Append score to the list
-          st.write(f"Modified Brier Score: {score}")
-      else:
-          st.write(f"You must Play A New Game before you can Make A Bet.")
-          
-    # Display all previous scores
-    st.write("Previous Scores:")
-    for i, score in enumerate(st.session_state.scores):
-        st.write(f"Bet {i + 1}: {score}")
+          if st.button("Keep Playing"):
+              result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
+              st.session_state.results.append(result)
+              st.write(f"Result: {result}")
+
+  with col3:
+      if st.session_state.initial_value is not None:
+          if st.button("Make A Bet"):
+              # ... (your existing logic for "Make A Bet" button) ...
+              forecast_lower = st.number_input("Forecast Lower", value=0)
+              forecast_higher = st.number_input("Forecast Higher", value=0)
+              if st.session_state.initial_value is not None:
+                  score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
+                  st.session_state.scores.append(score)  # Append score to the list
+                  st.write(f"Modified Brier Score: {score}")
+              else:
+                  st.write(f"You must Play A New Game before you can Make A Bet.")
+
+
+  st.write("Previous Results:", st.session_state.results)
+
+  # Display all previous scores
+  st.write("Previous Scores:")
+  for i, score in enumerate(st.session_state.scores):
+      st.write(f"Bet {i + 1}: {score}")
 
 # Main function to handle different states
 def main():
