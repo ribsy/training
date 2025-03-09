@@ -679,7 +679,7 @@ def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
 
   st.title("Playing Pool With The Reverened Bayes")
-  st.write("Your job is to make the best range based forecast in terms of where the white ball is on the table.")
+  #st.write("Your job is to make the best range based forecast in terms of where the white ball is on the table.")
   #st.write("- A pool table is 40 inches wide. That means the ball can land at inch 1 or inch 39.")
   #st.write("- When you hit the 'Keep Playing' button a ball is randomly rolled onto the table.")
   #st.write("- The application will announce if the ball landed to the 'left' or 'right' of the white ball.")
