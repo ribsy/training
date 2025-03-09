@@ -692,6 +692,8 @@ def random_number_game_with_brier_score():
         st.session_state.lower_bounds = []
     if "upper_bounds" not in st.session_state:  # Initialize upper bounds list
         st.session_state.upper_bounds = []
+    if "counter" not in st.session_state:
+        st.session_state.counter = 100
 
     if st.button("Play A New Game"):
         st.session_state.initial_value = random_number_generator()
@@ -703,6 +705,8 @@ def random_number_game_with_brier_score():
 
     if st.session_state.initial_value is not None:
         if st.button("Roll Ball"):
+          # Decrement counter
+          st.session_state.counter -= 5
           while True:  # Loop until a valid result is generated
               result = track_random_numbers(1)[1]  # Get "right" or "left"
               if result != "equal":  # Check if result is not equal to initial value
@@ -710,6 +714,8 @@ def random_number_game_with_brier_score():
           st.session_state.results.append(result)
           st.write(f"Result: {result}")
 
+        # Display counter as dollars
+        st.write(f"Money: ${st.session_state.counter}")
         st.write("Ball Locations:", ", ".join(st.session_state.results[1:]))
 
         forecast_lower = st.number_input("Forecast Lower", value=0)
