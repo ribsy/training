@@ -711,7 +711,7 @@ def random_number_game_with_brier_score():
 
     counter_placeholder = st.empty()
 
-    #counter_placeholder.write(f"Money: ${st.session_state.counter}")
+    counter_placeholder.write(f"Money Test: ${st.session_state.counter}")
         
     if st.button("Play A New Game"):
         st.session_state.counter = 100
