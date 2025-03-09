@@ -684,46 +684,38 @@ def random_number_game_with_brier_score():
     st.session_state.initial_value = None
   if "results" not in st.session_state:
     st.session_state.results = []
-  if "scores" not in st.session_state:
+  if "scores" not in st.session_state:  # Initialize scores list in session state
     st.session_state.scores = []
-    
-  # Put buttons on one line using st.columns
-  col1, col2, col3 = st.columns(3)
 
-  with col1:
-      if st.button("Play A New Game"):
-          st.session_state.initial_value = random_number_generator()
-          st.session_state.results = [st.session_state.initial_value]
-          st.session_state.scores = []  # Clear scores when starting a new game
-          st.write(f"Initial value: {st.session_state.initial_value}")
+  if st.button("Play A New Game"):
+    st.session_state.initial_value = random_number_generator()
+    st.session_state.results = [st.session_state.initial_value]
+    st.session_state.scores = []  # Clear scores when starting a new game
+    st.write(f"Initial value: {st.session_state.initial_value}")
 
-  with col2:
+  if st.session_state.initial_value is not None:
+    if st.button("Keep Playing"):
+      result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
+      st.session_state.results.append(result)
+      st.write(f"Result: {result}")
+
+    st.write("Previous Results:", st.session_state.results)
+
+    forecast_lower = st.number_input("Forecast Lower", value=0)
+    forecast_higher = st.number_input("Forecast Higher", value=0)
+
+    if st.button("Make A Bet"):
       if st.session_state.initial_value is not None:
-          if st.button("Keep Playing"):
-              result = track_random_numbers(1)[1]  # Get "right" or "left" from the function
-              st.session_state.results.append(result)
-              st.write(f"Result: {result}")
-
-  with col3:
-      if st.session_state.initial_value is not None:
-          if st.button("Make A Bet"):
-              # ... (your existing logic for "Make A Bet" button) ...
-              forecast_lower = st.number_input("Forecast Lower", value=0)
-              forecast_higher = st.number_input("Forecast Higher", value=0)
-              if st.session_state.initial_value is not None:
-                  score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
-                  st.session_state.scores.append(score)  # Append score to the list
-                  st.write(f"Modified Brier Score: {score}")
-              else:
-                  st.write(f"You must Play A New Game before you can Make A Bet.")
-
-
-  st.write("Previous Results:", st.session_state.results)
-
-  # Display all previous scores
-  st.write("Previous Scores:")
-  for i, score in enumerate(st.session_state.scores):
-      st.write(f"Bet {i + 1}: {score}")
+          score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
+          st.session_state.scores.append(score)  # Append score to the list
+          st.write(f"Modified Brier Score: {score}")
+      else:
+          st.write(f"You must Play A New Game before you can Make A Bet.")
+          
+    # Display all previous scores
+    st.write("Previous Scores:")
+    for i, score in enumerate(st.session_state.scores):
+        st.write(f"Bet {i + 1}: {score}")
 
 # Main function to handle different states
 def main():
