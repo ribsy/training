@@ -732,7 +732,9 @@ def random_number_game_with_brier_score():
                 score = round(score,3)
                 st.session_state.counter += (100 - score)
                 st.session_state.scores.append(score)  # Append score to the list
+                
                 st.write(f"Modified Brier Score: {score}")
+                st.write(f"Final Money: ${st.session_state.counter}")
             else:
                 st.write(f"You must Play A New Game before you can Make A Bet.")
 
