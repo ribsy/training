@@ -1,3 +1,4 @@
+
 import sqlite3
 import hashlib
 import streamlit as st
@@ -6,7 +7,6 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import beta
-
 
 st.set_page_config(
         page_title="FORECASTER TRAINING",
@@ -626,6 +626,32 @@ def track_random_numbers(num_requests=1):
 
   return results
 
+def range_scoring_function(lower_bound, upper_bound, forecast_value):
+    """Calculates a Brier-like score for a range and forecast value, 
+       acting as a proper score.
+
+    Args:
+        lower_bound: The lower bound of the range.
+        upper_bound: The upper bound of the range.
+        forecast_value: The value to be scored within the range.
+
+    Returns:
+        The Brier-like score, a value between 0 and infinity.
+        Lower scores indicate a better prediction.
+    """
+    # Check if the forecast value falls within the bounds
+    if lower_bound <= forecast_value <= upper_bound:
+        # Calculate the normalized distance from the midpoint
+        range_width = upper_bound - lower_bound
+        midpoint = (lower_bound + upper_bound) / 2
+        distance_from_midpoint = abs(forecast_value - midpoint)
+        score = (distance_from_midpoint / range_width) ** 2
+    else:
+        # If the forecast value is outside the bounds, apply a penalty
+        score = 1  # Or another appropriate penalty
+
+    return score
+
 def random_number_game_with_brier_score():
   """Streamlit interface for the random number game with Brier score."""
 
@@ -654,7 +680,7 @@ def random_number_game_with_brier_score():
 
     if st.button("Make A Bet"):
       if st.session_state.initial_value is not None:
-          score = modified_brier_score(forecast_lower, forecast_higher, 1, 39)  # Assume actual range is 1 to 39
+          score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)  # Assume actual range is 1 to 39
           st.write(f"Modified Brier Score: {score}")
       else:
           st.write(f"You must Play A New Game before you can Make A Bet.")
@@ -663,7 +689,7 @@ def random_number_game_with_brier_score():
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown"])
 
     if choice == "Sign Up":
         signup()
