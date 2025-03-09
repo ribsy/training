@@ -729,7 +729,7 @@ def random_number_game_with_brier_score():
         # Display all previous forecasts
         st.write("Previous Forecasts:")
         for i in range(len(st.session_state.lower_bounds)):
-            st.write(f"Bet {i + 1}: Lower Bound Ball Forecast - {st.session_state.lower_bounds[i]}, Upper Bound Ball Forecast - {st.session_state.upper_bounds[i]}")
+            st.write(f"Bet {i + 1}: Lower Bound - {st.session_state.lower_bounds[i]}, Upper Bound Ball  - {st.session_state.upper_bounds[i]}")
 
 # Main function to handle different states
 def main():
