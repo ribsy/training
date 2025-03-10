@@ -693,10 +693,10 @@ def random_number_game_with_brier_score():
     )
     st.image("./data/rev_bayes_pool.png")
 
-    a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs while confronting some amount of irriducible uncertainty."
-    b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. Your range based forecasts will be scored."
-    c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (beyond reason)...the bigger your penalties."
-    d = "Also, the more information you seek, the more it costs you. And that cost gets larger the more information you ask for."
+    a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs while confronting some amount of irriducible uncertainty. "
+    b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (Your range based forecasts will be scored.) "
+    c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (beyond reason)...the bigger your penalties. "
+    d = "Also, the more information you seek, the more it costs you. And that cost gets larger the more information you ask for. "
     e = "At the end, you will make a guess about where the true rate is.  That will also be scored and you will be penalized based on how far off you are."
     bayes_msg = a + b + c + d + e
     markdown_box("HOW THE GAME WORKS!", bayes_msg)
