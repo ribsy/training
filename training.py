@@ -693,6 +693,13 @@ def random_number_game_with_brier_score():
     )
     st.image("./data/rev_bayes_pool.png")
 
+    a = "You use burndown to measure the rate of risk elimination against a target SLA. "
+    b = "Underneath the hood it uses a first seen time stamps and a closed or eliminated time stamp. "
+    c = "Burndowns are really useful when you are focusing a critical class of risk and you want "
+    d = "to know if you are consistently keeping up with your SLA...over time."
+    burn_msg = a + b + c + d
+    markdown_box("THE HITS AND MISSES METRIC!", burn_msg)
+
     # Initialize session state variables
     if "initial_value" not in st.session_state:
         st.session_state.initial_value = None
