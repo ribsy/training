@@ -772,7 +772,7 @@ def random_number_game_with_brier_score():
         forecast_higher = st.number_input("Forecast Higher", value=0)
 
         if st.button("Forecast Range"):
-            if st.session_state.initial_value is not None:
+            if st.session_state.initial_value is not None and st.session_state.forecast_count <= 3:
 
                 # Increment forecast counter
                 st.session_state.forecast_count += 1
