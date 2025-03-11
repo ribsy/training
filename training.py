@@ -698,7 +698,7 @@ def random_number_game_with_brier_score():
     c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (beyond reason)...the bigger your penalties. "
     d = "Also, the more information you seek, the more it costs you. And that cost gets larger the more information you ask for. "
     e = "At the end, you will make a precise guess about the balls location. That guess will also be scored – and you will be penalized based on how far off you are. "
-    f = "But with larger outsized awards for being close – and a whoppig $100 for being both precise and accurate...meaning spot on!"
+    f = "NOTE: you will win awards for being close – with a whoppig $100 for being both precise and accurate...meaning by being spot on!"
     bayes_msg = a + b + c + d + e + f
     markdown_box("HOW THE GAME WORKS!", bayes_msg)
 
