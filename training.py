@@ -821,9 +821,9 @@ def random_number_game_with_brier_score():
                 elif difference == 1:
                   st.session_state.counter += 50
                 elif difference == 2:
-                  st.session_state.counter += 10
+                  st.session_state.counter += 25
                 elif difference == 3:
-                  st.session_state.counter += 5
+                  st.session_state.counter += 10
                 else:
                   st.session_state.counter -= difference * 5
 
