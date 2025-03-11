@@ -815,7 +815,16 @@ def random_number_game_with_brier_score():
                 difference = abs(guess_location - st.session_state.initial_value)
 
                 # Subtract difference * 5 from counter
-                st.session_state.counter -= difference * 5
+                if difference == 0:
+                  st.session_state.counter += 100
+                elif difference == 1:
+                  st.session_state.counter += 50
+                elif difference == 2:
+                  st.session_state.counter += 10
+                elif difference == 3:
+                  st.session_state.counter += 5
+                else:
+                  st.session_state.counter -= difference * 5
 
                 # Display updated counter
                 #st.write(f"Money: ${st.session_state.counter}")
