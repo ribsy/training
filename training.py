@@ -599,9 +599,12 @@ def view_user_data():
     user_data = cursor.fetchall()
     conn.close()
 
-def random_number_generator():
+def random_number_generator(initial_val = 0):
   """Generates a random number between 1 and 40 (non-inclusive)."""
-  return random.randint(5, 34)
+  if initial_val == 0:
+    return random.randint(1,43)
+  else:
+    return random.randint(10, 33)
 
 def track_random_numbers(num_requests=1, initial_value=1):
   """Generates an initial random number and compares subsequent numbers.
@@ -732,7 +735,7 @@ def random_number_game_with_brier_score():
         #st.write(f"Money: ${st.session_state.counter}")
         counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
 
-        st.session_state.initial_value = random_number_generator()
+        st.session_state.initial_value = random_number_generator(1)
         st.session_state.results = [st.session_state.initial_value]
         st.session_state.scores = []  # Clear scores when starting a new game
         st.session_state.lower_bounds = []  # Clear lower bounds when starting a new game
