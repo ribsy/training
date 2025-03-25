@@ -740,6 +740,7 @@ def random_number_game_with_brier_score():
         st.session_state.scores = []  # Clear scores when starting a new game
         st.session_state.lower_bounds = []  # Clear lower bounds when starting a new game
         st.session_state.upper_bounds = []  # Clear upper bounds when starting a new game
+        st.session_state.forecast_count = 0 # set to zero
     else:
         counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
 
