@@ -1048,7 +1048,7 @@ def create_influence_diagram_from_text(text):
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "Influence"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool"])
 
     if choice == "Sign Up":
         signup()
