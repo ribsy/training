@@ -246,6 +246,19 @@ def forecast_elephant():
     st.title("FORECASTING ELEPHANTS")
 
     st.markdown(
+      """
+      <style>
+      img {
+          border: 3px solid darkred; /* Adjust border width and color as needed */
+          border-radius: 10px; /* Optional: Add rounded corners */
+      }
+      </style>
+      """,
+      unsafe_allow_html=True,
+    )
+    st.image("./data/elephant_forecast.png")
+
+     St. Markdown (
         """
         <style>
         .boxed-text {
