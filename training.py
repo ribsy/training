@@ -1,4 +1,3 @@
-
 import sqlite3
 import hashlib
 import streamlit as st
@@ -6,7 +5,17 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import pandas as pd
+from PIL import ImageFont
+import os
+import plotly.express as px
+import networkx as nx
+import plotly.graph_objects as go
+import re
+import matplotlib.font_manager as fm
+
+
 from scipy.stats import beta
+
 
 st.set_page_config(
         page_title="FORECASTER TRAINING",
@@ -258,7 +267,7 @@ def forecast_elephant():
     )
     st.image("./data/elephant_forecast.png")
 
-     St. Markdown (
+    st.markdown(
         """
         <style>
         .boxed-text {
@@ -643,8 +652,8 @@ def track_random_numbers(num_requests=1, initial_value=1):
   return results
 
 def range_scoring_function(lower_bound, upper_bound, forecast_value):
-    """Calculates a Brier-like score for a range and forecast value, 
-       acting as a proper score. Rewards tighter ranges and 
+    """Calculates a Brier-like score for a range and forecast value,
+       acting as a proper score. Rewards tighter ranges and
        penalizes values outside the range based on distance.
        Penalizes wide ranges even if midpoint is close to forecast value.
        Penalizes ranges based on width when the forecast is the midpoint
@@ -674,9 +683,9 @@ def range_scoring_function(lower_bound, upper_bound, forecast_value):
 
         # Reward tighter ranges (add range width as a penalty)
         score += range_width / 100  # Adjust the divisor to control the impact
-        #score = score * range_width /10 # reward tighter ranges, scale by range width ->REMOVED 
+        #score = score * range_width /10 # reward tighter ranges, scale by range width ->REMOVED
 
-        # Penalize wide ranges even if midpoint is close 
+        # Penalize wide ranges even if midpoint is close
         if range_width > 20:  # Adjust threshold (20 here) as needed
             score += (range_width - 20) / 50  # Adjust divisor to control penalty scaling
 
@@ -707,6 +716,7 @@ def random_number_game_with_brier_score():
       """,
       unsafe_allow_html=True,
     )
+    #st.image("data/rev_bayes_pool.png")
     st.image("./data/rev_bayes_pool.png")
 
     a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty. "
@@ -719,7 +729,7 @@ def random_number_game_with_brier_score():
     markdown_box("HOW THE GAME WORKS!", bayes_msg)
 
     st.divider()
-        
+
     # Initialize session state variables
     if "initial_value" not in st.session_state:
         st.session_state.initial_value = None
@@ -741,7 +751,7 @@ def random_number_game_with_brier_score():
     counter_placeholder = st.empty()
 
     counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
-        
+
     if st.button("Play A New Game"):
         st.session_state.counter = 100
         st.session_state.ball_count = 0
@@ -760,9 +770,9 @@ def random_number_game_with_brier_score():
     if st.session_state.initial_value is not None:
 
         st.divider()
-            
+
         if st.button("Roll Ball"):
-           
+
           # Increment ball count
           st.session_state.ball_count += 1
 
@@ -772,8 +782,8 @@ def random_number_game_with_brier_score():
           elif st.session_state.ball_count > 7:
             st.session_state.counter -= 7
           else:
-            st.session_state.counter -= 5    
-                    
+            st.session_state.counter -= 5
+
           counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
           while True:  # Loop until a valid result is generated
               result = track_random_numbers(1, st.session_state.initial_value)[1]  # Get "right" or "left"
@@ -794,7 +804,7 @@ def random_number_game_with_brier_score():
 
                 # Increment forecast counter
                 st.session_state.forecast_count += 1
-                    
+
                 st.session_state.lower_bounds.append(forecast_lower)  # Store lower bound
                 st.session_state.upper_bounds.append(forecast_higher)  # Store upper bound
                 score = range_scoring_function(forecast_lower, forecast_higher, st.session_state.initial_value)
@@ -807,23 +817,23 @@ def random_number_game_with_brier_score():
                     st.session_state.counter += (round((100 - score)) * 1.5)/st.session_state.forecast_count
                   elif score <= 10:
                     st.session_state.counter += (round((100 - score)) * 1.2)/st.session_state.forecast_count
-                  else: 
+                  else:
                     st.session_state.counter += round(100 - score)/st.session_state.forecast_count
                 else:
-                    st.session_state.counter += -round(score * 1.5)   
-                    
+                    st.session_state.counter += -round(score * 1.5)
+
                 st.session_state.scores.append(score)  # Append score to the list
-                
+
                 st.write(f"Modified Brier Score: {score}")
                 counter_placeholder.write(f"Money: ${round(st.session_state.counter)}")
 
-                
-                
+
+
             else:
                 st.write(f"You must Play A New Game before you can Forecast A Range – or place your PRECISE bet.")
 
-        
-        st.divider()    
+
+        st.divider()
         # Guess Ball Location input field
         guess_location = st.number_input("Guess Ball Location", value=0)
 
@@ -862,11 +872,183 @@ def random_number_game_with_brier_score():
         #for i in range(len(st.session_state.lower_bounds)):
         #    st.write(f"Bet {i + 1}: Lower Bound - {st.session_state.lower_bounds[i]}, Upper Bound Ball  - {st.session_state.upper_bounds[i]}")
 
+
+def create_influence_diagram_from_text(text):
+    G = nx.DiGraph()
+    lines = text.strip().split('\n')
+    node_positions = {}
+    shapes = []
+    annotations = []
+    edges_x = []
+    edges_y = []
+
+    # 1. Add nodes to the dictionary first
+    for line in lines:
+        match = re.match(r'(Decision|Uncertainty|Outcome)\s+"([^"]+)"\s*(?:connects to:\s*([^,]+))?\s*(?:connects from:\s*([^,]+))?', line)
+        if match:
+            groups = match.groups()
+            object_type = groups[0]
+            title = groups[1]
+
+            # Use Matplotlib to find the font and calculate text width
+            font_prop = fm.FontProperties(family=['DejaVu Sans'], size=12)
+
+            # Calculate the actual width and height of the text (tighter calculation)
+            fig, ax = plt.subplots(figsize=(1, 1))
+            renderer = fig.canvas.get_renderer()
+            text_width, text_height = ax.text(0, 0, title, fontproperties=font_prop, bbox=dict(pad=0)).get_window_extent(renderer).size  # Reduced padding
+            plt.close(fig)
+
+            # Adjust shape dimensions, ensuring width is no more than 1.5 times the text width
+            shape_x = min(text_width / 72 / 2 * 1.5, 0.2)  # Limit width to 1.5 times text width or 0.2
+            shape_y = text_height / 72 / 2 * 1.2  # Keep height scaling as before
+
+            # --- Node Placement Logic with Decision Node on the Right ---
+            if object_type == 'Decision':
+                # Place decision node on the right
+                x = 0.9  # Adjust this value to control the horizontal position
+
+                # Ensure no overlap with existing nodes
+                while True:
+                    y = random.uniform(0, 1)  # Generate random y-coordinate
+                    overlap = False
+                    for existing_node, (existing_x, existing_y) in node_positions.items():
+                        distance = ((x - existing_x)**2 + (y - existing_y)**2)**0.5
+                        if distance < (shape_x + shape_y + 0.1):
+                            overlap = True
+                            break
+                    if not overlap:
+                        node_positions[title] = (x, y)
+                        break
+            else:
+                # Place other nodes randomly with overlap check
+                while True:
+                    x, y = random.uniform(0, 1), random.uniform(0, 1)
+                    overlap = False
+                    for existing_node, (existing_x, existing_y) in node_positions.items():
+                        distance = ((x - existing_x)**2 + (y - existing_y)**2)**0.5
+                        if distance < (shape_x + shape_y + 0.1):
+                            overlap = True
+                            break
+                    if not overlap:
+                        node_positions[title] = (x, y)
+                        break
+
+            # Shape for node
+            shape = {
+                'Decision': 'rect',
+                'Uncertainty': 'ellipse',
+                'Outcome': 'diamond'
+            }[object_type]
+
+            # Define shape path based on shape type
+            if shape == 'rect':
+                path = f"M {x - shape_x}, {y - shape_y} L {x + shape_x}, {y - shape_y} L {x + shape_x}, {y + shape_y} L {x - shape_x}, {y + shape_y} Z"
+                shapes.append({
+                    'type': 'path',
+                    'path': path,
+                    'fillcolor': '#FFA07A',  # Light red fill color
+                    'line': {'color': 'darkblue'},
+                    'xref': 'x',
+                    'yref': 'y'
+                })
+            elif shape == 'ellipse':
+                shapes.append({
+                    'type': 'circle',
+                    'xref': 'x',
+                    'yref': 'y',
+                    'x0': x - shape_x,
+                    'y0': y - shape_y,
+                    'x1': x + shape_x,
+                    'y1': y + shape_y,
+                    'fillcolor': '#FFA07A',  # Light red fill color
+                    'line': {'color': 'darkblue'}
+                })
+            else:  # diamond
+                path = f"M {x}, {y - shape_y} L {x + shape_x}, {y} L {x}, {y + shape_y} L {x - shape_x}, {y} Z"
+                shapes.append({
+                    'type': 'path',
+                    'path': path,
+                    'fillcolor': '#FFA07A',  # Light red fill color
+                    'line': {'color': 'darkblue'},
+                    'xref': 'x',
+                    'yref': 'y'
+                })
+
+            # Annotations for text (with bold font)
+            annotations.append({
+                'x': x,
+                'y': y,
+                'xref': 'x',
+                'yref': 'y',
+                'text': title,
+                'showarrow': False,
+                'xanchor': 'center',
+                'yanchor': 'middle',
+                'font': dict(family='DejaVu Sans', size=12, color='black', weight='bold')  # Bold font
+            })
+
+    # 2. Now process edges
+    for line in lines:
+        match = re.match(r'(Decision|Uncertainty|Outcome)\s+"([^"]+)"\s*(?:connects to:\s*([^,]+))?\s*(?:connects from:\s*([^,]+))?', line)
+        if match:
+            groups = match.groups()
+            object_type = groups[0]  # Get the object type (Decision, Uncertainty, Outcome)
+            title = groups[1]
+            connects_to = groups[2] if groups[2] else None
+            connects_from = groups[3] if groups[3] else None
+
+            if connects_to:
+                for to_node in connects_to.strip().split(','):
+                    to_node = to_node.strip()
+                    x, y = node_positions[title]
+                    to_x, to_y = node_positions[to_node]
+
+                    # Adjust edge endpoint if it connects to a decision node
+                    if to_node in node_positions and node_positions[to_node][0] == 0.9:  # Check if target node is a Decision node (x-coordinate 0.9)
+                         to_x = node_positions[to_node][0] - shape_x # Adjust to_x to the left edge of the decision node
+
+                    edges_x.extend([x, to_x, None])
+                    edges_y.extend([y, to_y, None])
+
+            if connects_from:
+                for from_node in connects_from.strip().split(','):
+                    from_node = from_node.strip()
+                    from_x, from_y = node_positions[from_node]
+                    x, y = node_positions[title]
+                    edges_x.extend([from_x, x, None])
+                    edges_y.extend([from_y, y, None])
+
+    # 3. Plotly Trace for Edges
+    edge_trace = go.Scatter(
+        x=edges_x,
+        y=edges_y,
+        line=dict(width=0.5, color="#888"),
+        hoverinfo="none",
+        mode="lines",
+    )
+
+    # 4. Plotly layout
+    layout = go.Layout(
+        title="Influence Diagram",
+        titlefont_size=16,
+        showlegend=False,
+        hovermode="closest",
+        margin=dict(b=20, l=5, r=5, t=40),
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-0.1, 1.1]),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, range=[-0.1, 1.1]),
+        shapes=shapes,
+        annotations=annotations,
+    )
+
+    fig = go.Figure(data=[edge_trace], layout=layout)
+    return fig
+
 # Main function to handle different states
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown","Play Pool"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "Influence"])
 
     if choice == "Sign Up":
         signup()
@@ -880,6 +1062,29 @@ def main():
         play_burndown()
     elif choice == "Play Pool" and 'role' in st.session_state:
         random_number_game_with_brier_score()
+    elif choice == "Influence" and 'role' in st.session_state:
+        st.title("Simple Influence Diagram")
+
+        a = "Decision \"Choose Strategy\" connects to: Market Share, Profit\n"
+        b = "Uncertainty \"Market Conditions\" connects to: Market Share\n"
+        c = "Outcome \"Market Share\" connects from: Choose Strategy, Market Conditions connects to: Profit\n"
+        d = "Outcome \"Profit\" connects from: Market Share, Choose Strategy"
+
+        inf_msg = a + b + c + d
+        inf_msg = inf_msg.replace("\n", "<br>")
+
+        # Render the text using markdown with unsafe_allow_html=True
+        st.markdown(inf_msg, unsafe_allow_html=True)
+        #markdown_box("EXAMPLE INFLUENCE DIAGRAM", inf_msg)
+
+        text_input = st.text_area("Enter your text description here:")
+
+        if st.button("Generate Diagram"):
+            if text_input:
+                fig = create_influence_diagram_from_text(text_input)
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Please enter a text description.")
     else:
         st.warning("Please log in to access the dashboard.")
 
