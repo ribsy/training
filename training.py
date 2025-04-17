@@ -317,7 +317,7 @@ def forecast_elephant():
 
     # Add the dropdown menu
     mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
-    selected_mammal = st.selectbox("Select Mammal", mammal_options)
+    selected_mammal = st.selectbox("Select Target Mammal", mammal_options)
 
     st.divider()
 
