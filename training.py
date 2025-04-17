@@ -281,9 +281,9 @@ def forecast_elephant():
         <div class="boxed-text">
             <B>THE ART OF DECOMPOSITIONAL FORECASTING</B><br>
             How do your predict things you know almost nothing about? <B>DECOMPOSITION!</B> In this example, you will decompose various
-            large mammals into smaller creatures...well <b>cows</b> and <b>kirks</b> aka humans. See the instructions for each section below.<br><br>
+            large mammals into smaller creatures...<b>cows</b> and <b>kirks</b> aka humans to be exact. See the instructions for each section below.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
-            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents! 
+            To help calibrate you (turn you into a bookie) money will be provided.  Your goal is to grow it as much as possible relative to your peers. 
             <B>INITIAL FUNDS: $100</B>
         </div>
        """,
