@@ -289,13 +289,7 @@ def forecast_elephant():
         unsafe_allow_html=True,
     )
 
-    # Initialize money_value in session state
-    if "money_value" not in st.session_state:
-        st.session_state.money_value = 100
-
-    # Display current money value
-    st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
-
+    st.divider()
     if st.button("Play A New Game"):
         st.session_state.money_value = 100  # Reset money_value
         # Reset other session variables used in the function:
@@ -306,6 +300,17 @@ def forecast_elephant():
         st.session_state.low_elph_lbs = 0
         st.session_state.score = 0  
         #st.experimental_rerun()  # Rerun the script to reflect the changes
+
+    st.divider()
+        
+    # Initialize money_value in session state
+    if "money_value" not in st.session_state:
+        st.session_state.money_value = 100
+
+    # Display current money value
+    st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
+
+    
 
     # Add the dropdown menu
     mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
