@@ -296,6 +296,17 @@ def forecast_elephant():
     # Display current money value
     st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
 
+    if st.button("Play A New Game"):
+        st.session_state.money_value = 100  # Reset money_value
+        # Reset other session variables used in the function:
+        st.session_state.high_cow_lbs = 0 
+        st.session_state.low_cow_lbs = 0
+        st.session_state.mean_cow_lbs = 0
+        st.session_state.high_elph_lbs = 0
+        st.session_state.low_elph_lbs = 0
+        st.session_state.score = 0  
+        #st.experimental_rerun()  # Rerun the script to reflect the changes
+
     # Add the dropdown menu
     mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
     selected_mammal = st.selectbox("Select Mammal", mammal_options)
