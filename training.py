@@ -283,8 +283,7 @@ def forecast_elephant():
             How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fit? What is your upper bound? What is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
-            This is your 80% prediction range.<br><br><br>
-
+            This is your 80% prediction range.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
             You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents!<br>
             <B>INITIAL FUNDS: $100</B>
