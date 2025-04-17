@@ -299,9 +299,7 @@ def forecast_elephant():
         st.session_state.high_elph_lbs = 0
         st.session_state.low_elph_lbs = 0
         st.session_state.score = 0  
-        #st.experimental_rerun()  # Rerun the script to reflect the changes
-
-    st.divider()
+        st.experimental_rerun()  # Rerun the script to reflect the changes
         
     # Initialize money_value in session state
     if "money_value" not in st.session_state:
@@ -315,6 +313,8 @@ def forecast_elephant():
     # Add the dropdown menu
     mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
     selected_mammal = st.selectbox("Select Mammal", mammal_options)
+
+    st.divider()
 
     # Row 1
     col1 = st.columns(1)  # Create two columns in the first row
