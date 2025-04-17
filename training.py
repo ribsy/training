@@ -285,7 +285,7 @@ def forecast_elephant():
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
             This is your 80% prediction range.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
-            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents!<br>
+            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents! 
             <B>INITIAL FUNDS: $100</B>
         </div>
        """,
