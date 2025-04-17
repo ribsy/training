@@ -257,7 +257,7 @@ def forecast_elephant():
 
 
     # Create a placeholder for the money value display
-    money_value_placeholder = st.empty()
+    money_value_placeholder = 100
 
     st.title("FORECASTING LARGE MAMMALS")
 
