@@ -372,6 +372,8 @@ def forecast_elephant():
         st.write(f"Upper Bound Cow Weight: {high_cow_lbs} lbs")
         st.write(f"Unit Cow Weight: {mean_cow_lbs} lbs")
 
+    st.divider()
+        
     st.markdown(
         """
         <style>
