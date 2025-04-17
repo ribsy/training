@@ -254,6 +254,11 @@ def markdown_box(bold_title, text_vals):
 
 
 def forecast_elephant():
+
+
+    # Create a placeholder for the money value display
+    money_value_placeholder = st.empty()
+
     st.title("FORECASTING LARGE MAMMALS")
 
     st.markdown(
@@ -267,7 +272,7 @@ def forecast_elephant():
       """,
       unsafe_allow_html=True,
     )
-    st.image("./data/elephant_forecast.png")
+    #st.image("./data/elephant_forecast.png")
 
     st.markdown(
         """
@@ -305,8 +310,9 @@ def forecast_elephant():
     if "money_value" not in st.session_state:
         st.session_state.money_value = 100
 
-    # Display current money value
-    st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
+    
+    # Display current money value in the placeholder
+    money_value_placeholder.write(f"Current Money Value: ${st.session_state.money_value}")
 
     
 
@@ -429,7 +435,7 @@ def forecast_elephant():
             st.session_state.money_value -= st.session_state.score
         
          # Display updated money value
-         st.write(f"Updated Money Value: ${round(st.session_state.money_value,2)}") 
+         money_value_placeholder.write(f"Updated Money Value: ${st.session_state.money_value}") 
 
          st.write(f"Forecasting Score: {st.session_state['score']}")
          write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'],
@@ -775,7 +781,7 @@ def random_number_game_with_brier_score():
       unsafe_allow_html=True,
     )
     #st.image("data/rev_bayes_pool.png")
-    st.image("./data/rev_bayes_pool.png")
+    #st.image("./data/rev_bayes_pool.png")
 
     a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty.\n\n"
     b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (Your range based forecasts will be scored.) "
