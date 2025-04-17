@@ -283,7 +283,8 @@ def forecast_elephant():
             How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fit? What is your upper bound? What is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
-            This is your 80% prediction range.
+            This is your 80% prediction range.<br><br>
+            <B>INITIAL FUNDS: $100</B>
         </div>
        """,
         unsafe_allow_html=True,
@@ -301,7 +302,7 @@ def forecast_elephant():
         st.session_state.score = 0  
         st.rerun()  # Rerun the script to reflect the changes
 
-    st.markdown("<br><br>", unsafe_allow_html=True)  
+    st.markdown("<br>", unsafe_allow_html=True)  
         
     # Initialize money_value in session state
     if "money_value" not in st.session_state:
