@@ -267,7 +267,7 @@ def forecast_elephant():
       """,
       unsafe_allow_html=True,
     )
-    #st.image("./data/elephant_forecast.png")
+    st.image("./data/elephant_forecast.png")
 
     st.markdown(
         """
