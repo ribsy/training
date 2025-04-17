@@ -297,7 +297,7 @@ def forecast_elephant():
     st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
 
     # Add the dropdown menu
-    mammal_options = ["Elephant", "Rhinoceros", "Hippopotamus"]
+    mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
     selected_mammal = st.selectbox("Select Mammal", mammal_options)
 
     # Row 1
