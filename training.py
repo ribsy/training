@@ -299,7 +299,7 @@ def forecast_elephant():
         st.session_state.high_elph_lbs = 0
         st.session_state.low_elph_lbs = 0
         st.session_state.score = 0  
-        st.experimental_rerun()  # Rerun the script to reflect the changes
+        st.rerun()  # Rerun the script to reflect the changes
         
     # Initialize money_value in session state
     if "money_value" not in st.session_state:
