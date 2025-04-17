@@ -556,6 +556,24 @@ def play_burndown():
 
     st.write("\n")
 
+    if st.button("Transfer Values"):
+        st.session_state.mone_open = st.session_state.total_open  # Transfer total_open to mone_open
+        st.session_state.mone_fixed = st.session_state.total_fixed  # Transfer total_fixed to mone_fixed
+        
+        # Reset other fields to zero:
+        st.session_state.mtwo_open = 0
+        st.session_state.mthree_open = 0
+        st.session_state.mfour_open = 0
+        st.session_state.mtwo_fixed = 0
+        st.session_state.mthree_fixed = 0
+        st.session_state.mfour_fixed = 0
+        
+        # You might need to update total_open and total_fixed in session state as well:
+        st.session_state.total_open = st.session_state.mone_open 
+        st.session_state.total_fixed = st.session_state.mone_fixed
+
+        st.rerun()  # Rerun the script to update the input fields
+
     col_sla_1, col_sla_2 = st.columns(2)
     with col_sla_1:
         st.markdown("######")
