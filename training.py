@@ -427,8 +427,8 @@ def forecast_elephant():
                 low_val = 4000
                 high_val = 14000
             elif selected_mammal == "Rhinoceros":
-                low_val = 1700
-                high_val = 3000
+                low_val = 4400
+                high_val = 8000
             elif selected_mammal == "Hippopotamus":
                 low_val = 2200
                 high_val = 9900
@@ -436,8 +436,8 @@ def forecast_elephant():
                 low_val = 11000
                 high_val = 16000
             else:
-                low_val = 1700
-                high_val = 3000
+                low_val = 4400
+                high_val = 8000
 
             st.write(f"Lower Bound Mammal Weight: {st.session_state['low_elph_lbs']} lbs")
             st.write(f"Upper Bound Mammal Weight: {st.session_state['high_elph_lbs']} lbs")
