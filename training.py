@@ -1,3 +1,4 @@
+
 import sqlite3
 import hashlib
 import streamlit as st
@@ -62,7 +63,8 @@ def init_db():
             high_cow NUMERIC NOT NULL,
             low_elph NUMERIC NOT NULL,
             high_elph NUMERIC NOT NULL,
-            score REAL NOT NULL
+            score REAL NOT NULL,
+            money_value REAL NOT NULL
         )
     ''')
     conn.commit()
@@ -94,11 +96,11 @@ def write_slider_values(slider1, slider2, slider3, slider4):
     conn.commit()
     conn.close()
 
-def write_elephant_values(username, low_cow, high_cow, low_elph, high_elph, score):
+def write_elephant_values(username, low_cow, high_cow, low_elph, high_elph, score, money_value):
     conn = sqlite3.connect('train.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO forecasts (username, low_cow, high_cow, low_elph, high_elph, score) VALUES (?, ?, ?, ?, ?, ?)",
-                   (username, low_cow, high_cow, low_elph, high_elph, score))
+    cursor.execute("INSERT INTO forecasts (username, low_cow, high_cow, low_elph, high_elph, score, money_value) VALUES (?, ?, ?, ?, ?, ?,?)",
+                   (username, low_cow, high_cow, low_elph, high_elph, score, money_value))
     conn.commit()
     conn.close()
 
@@ -252,7 +254,7 @@ def markdown_box(bold_title, text_vals):
 
 
 def forecast_elephant():
-    st.title("FORECASTING ELEPHANTS")
+    st.title("FORECASTING LARGE MAMMALS")
 
     st.markdown(
       """
@@ -286,6 +288,17 @@ def forecast_elephant():
        """,
         unsafe_allow_html=True,
     )
+
+    # Initialize money_value in session state
+    if "money_value" not in st.session_state:
+        st.session_state.money_value = 100
+
+    # Display current money value
+    st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
+
+    # Add the dropdown menu
+    mammal_options = ["Elephant", "Rhinoceros", "Hippopotamus"]
+    selected_mammal = st.selectbox("Select Mammal", mammal_options)
 
     # Row 1
     col1 = st.columns(1)  # Create two columns in the first row
@@ -327,7 +340,7 @@ def forecast_elephant():
         }
         </style>
         <div class="boxed-text">
-            <B>USING COWS TO PREDICT THE WEIGHT OF AN ELEPHANTS</B><br>
+            <B>USING COWS TO PREDICT THE WEIGHT OF AN ELEPHANTS (OR OTHER BIGGIES)</B><br>
             How many cows fit into an elephant? Use your imagination again. You will use the average cow weight you predictive above to do this.
             First determine what your upper bound count of cows is? Next, what is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
@@ -365,18 +378,47 @@ def forecast_elephant():
         st.session_state['low_elph_lbs'] = low_elph_lbs
 
         if 'high_elph_lbs' in st.session_state:
+            
+            if selected_mammal == "Whale":
+                low_val = 200000
+                high_val = 300000
+            elif selected_mammal == "Rhinoceros":
+                low_val = 1700
+                high_val = 3000
+            elif selected_mammal == "Hippopotamus":
+                low_val = 2200
+                high_val = 9900
+            elif selected_mammal == "T-Rex":
+                low_val = 11000
+                high_val = 16000
+            else:
+                low_val = 4000
+                high_val = 14000
+
             st.write(f"Lower Bound Elephant Weight: {st.session_state['low_elph_lbs']} lbs")
             st.write(f"Upper Bound Elephant Weight: {st.session_state['high_elph_lbs']} lbs")
-            score = modified_brier_score(st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'], 4000, 14000)
-            score = round(score,3)
+            score = modified_brier_score(st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'], low_val, high_val)
+            score = round(score,2)
             st.session_state['score'] = score
             #st.write(f"Modified Brier-like Score: {score}")
 
-    if st.button("Submit Elephant Forecast"):
+    if st.button("Submit Large Mammal Forecast"):
+         # Subtract score from money_value
+
+         if st.session_state.score < 1:
+            st.session_state.money_value += (1 - st.session_state.score) * 100
+         elif st.session_state.score < 10:
+            st.session_state.money_value += st.session_state.score + 50
+         else:
+            st.session_state.money_value -= st.session_state.score
+        
+         # Display updated money value
+         st.write(f"Updated Money Value: ${round(st.session_state.money_value,2)}") 
+
          st.write(f"Forecasting Score: {st.session_state['score']}")
          write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'],
                                st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'],
-                               st.session_state['score'])
+                               st.session_state['score'], st.session_state['money_value'])
          if st.success("Elephant Forecast Saved!"):
             st.session_state['elephant_saved'] = True  # Set the session state variable to True
 
@@ -413,14 +455,14 @@ def modified_brier_score(forecast_lower, forecast_upper, actual_lower, actual_up
     upper_diff = (forecast_upper - actual_upper) ** 2/(forecast_upper - forecast_lower)
 
     # Calculate the average of the squared differences (Brier-like score)
-    score = (lower_diff + upper_diff) / 2
+    score = round(((lower_diff + upper_diff) / 2)/100,2)
     return score
 
 # Display forecast data
 def view_forecasts():
     conn = sqlite3.connect('train.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT username, low_cow, high_cow, low_elph, high_elph, score FROM forecasts")
+    cursor.execute("SELECT username, low_cow, high_cow, low_elph, high_elph, score, money_value FROM forecasts")
     fc_data = cursor.fetchall()
     conn.close()
 
@@ -719,11 +761,11 @@ def random_number_game_with_brier_score():
     #st.image("data/rev_bayes_pool.png")
     st.image("./data/rev_bayes_pool.png")
 
-    a = "<strong>This is a calibration game.</strong> It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty.<br><br>"
-    b = "<strong>First,</strong> you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (<i>Your range based forecasts will be scored.</i>) "
-    c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (<i>beyond reason</i>)...the bigger your penalties.<br><br>"
-    d = "The more information you seek, <strong>the more it costs you.</strong> And that cost gets larger the more information you ask for. <br><br>"
-    e = "<strong>At the end,</strong> you will make a precise guess about the balls location. That guess will also be scored – and you will be penalized if you are far off. "
+    a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty.\n\n"
+    b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (Your range based forecasts will be scored.) "
+    c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (beyond reason)...the bigger your penalties. "
+    d = "Also, the more information you seek, the more it costs you. And that cost gets larger the more information you ask for. "
+    e = "At the end, you will make a precise guess about the balls location. That guess will also be scored – and you will be penalized if you are far off. "
     f = "NOTE: you will win awards for being close – with a whoppig $100 for being both precise and accurate...meaning by being spot on!"
     bayes_msg = a + b + c + d + e + f
     markdown_box("HOW THE GAME WORKS!", bayes_msg)
@@ -1048,7 +1090,7 @@ def create_influence_diagram_from_text(text):
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "Influence"])
 
     if choice == "Sign Up":
         signup()
