@@ -301,7 +301,7 @@ def forecast_elephant():
         st.session_state.score = 0  
         st.rerun()  # Rerun the script to reflect the changes
 
-    st.write("\n\n\n")  
+    st.markdown("<br><br>", unsafe_allow_html=True)  
         
     # Initialize money_value in session state
     if "money_value" not in st.session_state:
