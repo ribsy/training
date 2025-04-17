@@ -341,7 +341,7 @@ def forecast_elephant():
         </style>
         <div class="boxed-text">
             <B>USING COWS TO PREDICT THE WEIGHT OF AN ELEPHANTS (OR OTHER BIGGIES)</B><br>
-            How many cows fit into an elephant? Use your imagination again. You will use the average cow weight you predictive above to do this.
+            How many cows fit into an large mammal? Use your imagination again. You will use the average cow weight you predictive above to do this.
             First determine what your upper bound count of cows is? Next, what is your lower bound?
             For your upper value, there should be an 90% probability that the value is at or below the upper bound.
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
@@ -395,8 +395,8 @@ def forecast_elephant():
                 low_val = 4000
                 high_val = 14000
 
-            st.write(f"Lower Bound Elephant Weight: {st.session_state['low_elph_lbs']} lbs")
-            st.write(f"Upper Bound Elephant Weight: {st.session_state['high_elph_lbs']} lbs")
+            st.write(f"Lower Bound Mammal Weight: {st.session_state['low_elph_lbs']} lbs")
+            st.write(f"Upper Bound Mammal Weight: {st.session_state['high_elph_lbs']} lbs")
             score = modified_brier_score(st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'], low_val, high_val)
             score = round(score,2)
             st.session_state['score'] = score
@@ -419,7 +419,7 @@ def forecast_elephant():
          write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'],
                                st.session_state['low_elph_lbs'], st.session_state['high_elph_lbs'],
                                st.session_state['score'], st.session_state['money_value'])
-         if st.success("Elephant Forecast Saved!"):
+         if st.success("Mammal Forecast Saved!"):
             st.session_state['elephant_saved'] = True  # Set the session state variable to True
 
     if 'elephant_saved' in st.session_state:
@@ -434,7 +434,7 @@ def forecast_elephant():
             </style>
             <div class="boxed-text">
                 <B>SCORING FORECASTS</B><br>
-                The lower your score is the better. A score of 0 means you are exactly right in term of the elephants weight range.
+                The lower your score is the better. A score of 0 means you are exactly right in term of the mammals weight range.
                 The futher off you are from that range, the higher the score is.  A score below 100 is incredibly good.
                 And anything below 1,000 is not bad.
             </div>
@@ -443,7 +443,7 @@ def forecast_elephant():
         )
 
         st.write("\n")
-        if st.button("View All Elephant Forecasts and Scores"):
+        if st.button("View All Mammal Forecasts and Scores"):
             view_forecasts()
 
 
