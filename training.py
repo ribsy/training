@@ -279,11 +279,9 @@ def forecast_elephant():
         }
         </style>
         <div class="boxed-text">
-            <B>USING PEOPLE TO PREDICT THE WEIGHT OF A COW</B><br>
-            How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fit? What is your upper bound? What is your lower bound?
-            For your upper value, there should be an 90% probability that the value is at or below the upper bound.
-            For your lower value, there should be an 90% probability that the value is at or above the lower bound.
-            This is your 80% prediction range.<br><br>
+            <B>THE ART OF DECOMPOSITIONAL FORECASTING</B><br>
+            How do your predict things you know almost nothing about? <B>DECOMPOSITION!</B> In this example, you will decompose various
+            large mammals into smaller creatures...well <b>cows</b> and <b>kirks</b> aka humans. See the instructions for each section below.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
             You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents! 
             <B>INITIAL FUNDS: $100</B>
