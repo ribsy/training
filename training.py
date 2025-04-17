@@ -321,6 +321,29 @@ def forecast_elephant():
 
     st.divider()
 
+    st.markdown(
+        """
+        <style>
+        .boxed-text {
+            border: 1px solid #000;
+            padding: 10px;
+            border-radius: 5px; /* Optional: Add rounded corners */
+        }
+        </style>
+        <div class="boxed-text">
+            <B>USING PEOPLE TO PREDICT THE WEIGHT OF A COW</B><br>
+            How many 200 lbs males fit into a cow? Use you imagination. Can you see how many fit? What is your upper bound? What is your lower bound?
+            For your upper value, there should be an 90% probability that the value is at or below the upper bound.
+            For your lower value, there should be an 90% probability that the value is at or above the lower bound.
+            This is your 80% prediction range.<br><br>
+            <B>PROGRESSIVE GAMBELING</B><br>
+            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents! 
+            <B>INITIAL FUNDS: $100</B>
+        </div>
+       """,
+        unsafe_allow_html=True,
+    )
+
     # Row 1
     col1 = st.columns(1)  # Create two columns in the first row
     with col1[0]:
