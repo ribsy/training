@@ -556,7 +556,13 @@ def play_burndown():
 
     st.write("\n")
 
-    if st.button("Transfer Values") and 'total_open' in st.session_state:
+    # Initialize total_open and total_fixed in session_state
+    if 'total_open' not in st.session_state:
+        st.session_state['total_open'] = 0  # Default to 0
+    if 'total_fixed' not in st.session_state:
+        st.session_state['total_fixed'] = 0  # Default to 0
+
+    if st.button("Transfer Values") and st.session_state['total_open'] > 0:
         
         st.session_state.mone_open = st.session_state.total_open  # Transfer total_open to mone_open
         st.session_state.mone_fixed = st.session_state.total_fixed  # Transfer total_fixed to mone_fixed
