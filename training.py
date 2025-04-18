@@ -579,6 +579,8 @@ def play_burndown():
         st.session_state.total_open = st.session_state.mone_open 
         st.session_state.total_fixed = st.session_state.mone_fixed
 
+        st.session_state.sla = sla_val
+
         st.rerun()  # Rerun the script to update the input fields
 
     col_sla_1, col_sla_2 = st.columns(2)
