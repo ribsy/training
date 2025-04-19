@@ -1,3 +1,6 @@
+%%writefile app.py
+
+
 
 import sqlite3
 import hashlib
@@ -283,7 +286,7 @@ def forecast_elephant():
             How do your predict things you know almost nothing about? <B>DECOMPOSITION!</B> In this example, you will decompose various
             large mammals into smaller creatures...<b>cows</b> and <b>kirks</b> aka humans to be exact. See the instructions for each section below.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
-            To help calibrate you (turn you into a bookie) money will be provided.  Your goal is to grow it as much as possible relative to your peers. 
+            To help calibrate you (turn you into a bookie) money will be provided.  Your goal is to grow it as much as possible relative to your peers.
             <B>INITIAL FUNDS: $100</B>
         </div>
        """,
@@ -294,16 +297,16 @@ def forecast_elephant():
     if st.button("Play A New Game"):
         st.session_state.money_value = 100  # Reset money_value
         # Reset other session variables used in the function:
-        st.session_state.high_cow_lbs = 0 
+        st.session_state.high_cow_lbs = 0
         st.session_state.low_cow_lbs = 0
         st.session_state.mean_cow_lbs = 0
         st.session_state.high_elph_lbs = 0
         st.session_state.low_elph_lbs = 0
-        st.session_state.score = 0  
+        st.session_state.score = 0
         st.rerun()  # Rerun the script to reflect the changes
 
-    st.markdown("<br>", unsafe_allow_html=True)  
-        
+    st.markdown("<br>", unsafe_allow_html=True)
+
     # Initialize money_value in session state
     if "money_value" not in st.session_state:
         st.session_state.money_value = 100
@@ -311,7 +314,7 @@ def forecast_elephant():
     # Display current money value
     #st.write(f"Initial Money Value: ${round(st.session_state.money_value,2)}")
 
-    
+
 
     # Add the dropdown menu
     mammal_options = ["Rhinoceros", "Hippopotamus","Elephant"]
@@ -335,7 +338,7 @@ def forecast_elephant():
             For your lower value, there should be an 90% probability that the value is at or above the lower bound.
             This is your 80% prediction range.<br><br>
             <B>PROGRESSIVE GAMBELING</B><br>
-            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents! 
+            You will make forecasts about three progressively larger mammals. Your goal is to beat your opponents!
             <B>INITIAL FUNDS: $100</B>
         </div>
        """,
@@ -373,7 +376,7 @@ def forecast_elephant():
         st.write(f"Unit Cow Weight: {mean_cow_lbs} lbs")
 
     st.divider()
-        
+
     st.markdown(
         """
         <style>
@@ -422,7 +425,7 @@ def forecast_elephant():
         st.session_state['low_elph_lbs'] = low_elph_lbs
 
         if 'high_elph_lbs' in st.session_state:
-            
+
             if selected_mammal == "Elephant":
                 low_val = 4000
                 high_val = 14000
@@ -455,9 +458,9 @@ def forecast_elephant():
             st.session_state.money_value += st.session_state.score + 50
          else:
             st.session_state.money_value -= st.session_state.score
-        
+
          # Display updated money value
-         st.write(f"Updated Money Value: ${round(st.session_state.money_value,2)}") 
+         st.write(f"Updated Money Value: ${round(st.session_state.money_value,2)}")
 
          st.write(f"Forecasting Score: {st.session_state['score']}")
          write_elephant_values(st.session_state['username'], st.session_state['low_cow_lbs'], st.session_state['high_cow_lbs'],
@@ -556,33 +559,6 @@ def play_burndown():
 
     st.write("\n")
 
-    # Initialize total_open and total_fixed in session_state
-    if 'total_open' not in st.session_state:
-        st.session_state['total_open'] = 0  # Default to 0
-    if 'total_fixed' not in st.session_state:
-        st.session_state['total_fixed'] = 0  # Default to 0
-
-    if st.button("Transfer Values") and st.session_state['total_open'] > 0:
-        
-        st.session_state.mone_open = st.session_state.total_open  # Transfer total_open to mone_open
-        st.session_state.mone_fixed = st.session_state.total_fixed  # Transfer total_fixed to mone_fixed
-        
-        # Reset other fields to zero:
-        st.session_state.mtwo_open = 0
-        st.session_state.mthree_open = 0
-        st.session_state.mfour_open = 0
-        st.session_state.mtwo_fixed = 0
-        st.session_state.mthree_fixed = 0
-        st.session_state.mfour_fixed = 0
-        
-        # You might need to update total_open and total_fixed in session state as well:
-        st.session_state.total_open = st.session_state.mone_open 
-        st.session_state.total_fixed = st.session_state.mone_fixed
-
-        st.session_state.sla = sla_val
-
-        st.rerun()  # Rerun the script to update the input fields
-
     col_sla_1, col_sla_2 = st.columns(2)
     with col_sla_1:
         st.markdown("######")
@@ -669,6 +645,24 @@ def play_burndown():
     else:
         if st.session_state['total_open'] == 0:
             st.session_state['show_graph'] = True
+
+    if st.button("Transfer Values"):
+        st.session_state.mone_open = st.session_state.total_open  # Transfer total_open to mone_open
+        st.session_state.mone_fixed = st.session_state.total_fixed  # Transfer total_fixed to mone_fixed
+
+        # Reset other fields to zero:
+        st.session_state.mtwo_open = 0
+        st.session_state.mthree_open = 0
+        st.session_state.mfour_open = 0
+        st.session_state.mtwo_fixed = 0
+        st.session_state.mthree_fixed = 0
+        st.session_state.mfour_fixed = 0
+
+        # You might need to update total_open and total_fixed in session state as well:
+        st.session_state.total_open = st.session_state.mone_open
+        st.session_state.total_fixed = st.session_state.mone_fixed
+
+        st.rerun()  # Rerun the script to update the input fields
 
     if st.session_state['show_graph']:
 
