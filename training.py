@@ -1,6 +1,3 @@
-%%writefile app.py
-
-
 
 import sqlite3
 import hashlib
