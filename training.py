@@ -16,6 +16,7 @@ import matplotlib.font_manager as fm
 
 
 from scipy.stats import beta
+from scipy.stats import gamma
 
 
 st.set_page_config(
@@ -555,7 +556,7 @@ def transfer_values():
     st.session_state.mfour_fixed = 0
     st.session_state.total_open = st.session_state.mone_open
     st.session_state.total_fixed = st.session_state.mone_fixed
-    st.rerun()
+    #st.experimental_rerun()
 
 def play_burndown():
     st.title("BURNDOWN")
@@ -605,13 +606,13 @@ def play_burndown():
     #with col2:
     #    prior_open = st.number_input("", value=1, step=1, key = "prior_open", disabled=True)
     with col3:
-        mone_open = st.number_input("", value=0, key = "mone_open")
+        mone_open = st.number_input("", step=1, key = "mone_open")
     with col4:
-        mtwo_open = st.number_input("", value=0, step=1, key = "mtwo_open")
+        mtwo_open = st.number_input("", step=1, key = "mtwo_open")
     with col5:
-        mthree_open = st.number_input("", value=0, step=1, key = "mthree_open")
+        mthree_open = st.number_input("", step=1, key = "mthree_open")
     with col6:
-        mfour_open = st.number_input("", value=0, step=1, key = "mfour_open")
+        mfour_open = st.number_input("", step=1, key = "mfour_open")
     with col7:
         # Calculate total_open
         total_open = mone_open + mtwo_open + mthree_open + mfour_open
@@ -628,13 +629,13 @@ def play_burndown():
     #with col9:
     #    prior_fixed = st.number_input("", value=1, step=1, key = "prior_fixed", disabled=True)
     with col10:
-        mone_fixed = st.number_input("", value=0, step=1, key = "mone_fixed")
+        mone_fixed = st.number_input("", step=1, key = "mone_fixed")
     with col11:
-        mtwo_fixed = st.number_input("", value=0, step=1, key = "mtwo_fixed")
+        mtwo_fixed = st.number_input("", step=1, key = "mtwo_fixed")
     with col12:
-        mthree_fixed = st.number_input("", value=0, step=1, key = "mthree_fixed")
+        mthree_fixed = st.number_input("", step=1, key = "mthree_fixed")
     with col13:
-        mfour_fixed = st.number_input("", value=0, step=1, key = "mfour_fixed")
+        mfour_fixed = st.number_input("",  step=1, key = "mfour_fixed")
     with col14:
         total_fixed = mone_fixed + mtwo_fixed + mthree_fixed + mfour_fixed
         st.session_state['total_fixed'] = total_fixed
@@ -656,8 +657,46 @@ def play_burndown():
         if st.session_state['total_open'] == 0:
             st.session_state['show_graph'] = True
 
-    if st.button("Transfer Values", on_click=transfer_values):
+    if st.button("Calculate Arrival, Departure, and Removal Rates"):
+
+        # Gamma-Poisson rate estimation
+        observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
+        departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
+
+        # Prior parameters (adjust as needed)
+        alpha_prior = .5  # Shape parameter
+        beta_prior = 0   # Rate parameter
+
+        # Calculate posterior parameters
+        alpha_obs_posterior = alpha_prior + sum(observed_risks)
+        beta_obs_posterior = beta_prior + len(observed_risks)
+
+        alpha_dpt_posterior = alpha_prior + sum(departed_risks)
+        beta_dpt_posterior = beta_prior + len(departed_risks)
+
+        # Estimate rate (mean of posterior Gamma distribution)
+        estimated_obs_rate = alpha_obs_posterior / beta_obs_posterior
+
+        estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
+
+        # Calculate 95% credible interval
+        lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior) 
+        upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
+
+        lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior) 
+        upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
+
+        st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
+        st.write(f"95% Arrival Credible Interval: ({lower_obs_bound:.2f}, {upper_obs_bound:.2f})")
+
+        st.write(f"Estimated Departure Rate: {estimated_dpt_rate:.2f}")
+        st.write(f"95% Departure Credible Interval: ({lower_dpt_bound:.2f}, {upper_dpt_bound:.2f})")
+
+        st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
+
+    if st.button("Aggregate Values", on_click=transfer_values):
         pass  # No need for other code here
+
 
     if st.session_state['show_graph']:
 
