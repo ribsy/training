@@ -759,6 +759,10 @@ def play_burndown():
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
 
+       st.write(f"Observed Risks: {st.session_state.observed_risks}")
+       st.write(f"Departed Risks: {st.session_state.departed_risks}")
+            
+
     #if st.button("Append Risks and Calculate Trends", on_click=append_risks_and_calculate_rates):
     #    pass  # No need for other code here
 
