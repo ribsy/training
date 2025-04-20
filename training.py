@@ -558,7 +558,37 @@ def transfer_values():
     st.session_state.total_fixed = st.session_state.mone_fixed
     #st.experimental_rerun()
 
+def append_risks_and_calculate_rates():
+       # Get current risk values from session state
+       observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
+       departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
+
+       # Append to session state lists
+       st.session_state.observed_risks.extend(observed_risks)
+       st.session_state.departed_risks.extend(departed_risks)
+
+       # Calculate rates of change (example using simple differences)
+       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0  
+       dpt_rate_change = st.session_state.departed_risks[-1] - st.session_state.departed_risks[-5] if len(st.session_state.departed_risks) >= 5 else 0
+
+       # Calculate average departed/observed ratio and trend
+       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0 
+       avg_ratio_previous = np.mean(np.array(st.session_state.departed_risks[:-4]) / np.array(st.session_state.observed_risks[:-4])) if len(st.session_state.observed_risks) >= 5 and all(x != 0 for x in st.session_state.observed_risks[:-4]) else 0
+       ratio_trend = "Increased" if avg_ratio_current > avg_ratio_previous else "Decreased" if avg_ratio_current < avg_ratio_previous else "Unchanged"
+
+       # Display results
+       st.write(f"Observed Risks Rate Change: {obs_rate_change}")
+       st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
+       st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
+
 def play_burndown():
+
+    # Initialize Session State for Lists
+    if "observed_risks" not in st.session_state:
+        st.session_state.observed_risks = []
+    if "departed_risks" not in st.session_state:
+        st.session_state.departed_risks = []
+
     st.title("BURNDOWN")
 
     a = "You use burndown to measure the rate of risk elimination against a target SLA. "
@@ -651,11 +681,16 @@ def play_burndown():
     if 'show_graph' not in st.session_state:
         st.session_state['show_graph'] = False
 
+    st.divider()
+
     if st.button("Calculate Burndown Rate"):
          st.session_state['show_graph'] = True
     else:
         if st.session_state['total_open'] == 0:
             st.session_state['show_graph'] = True
+
+    st.divider()
+
 
     if st.button("Calculate Arrival, Departure, and Removal Rates"):
 
@@ -694,9 +729,40 @@ def play_burndown():
 
         st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
 
+    st.divider()
+
     if st.button("Aggregate Values", on_click=transfer_values):
         pass  # No need for other code here
+    
+    st.divider()
 
+    if st.button("Append Risks and Calculate Trends"):
+      # Get current risk values from session state
+       observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
+       departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
+
+       # Append to session state lists
+       st.session_state.observed_risks.extend(observed_risks)
+       st.session_state.departed_risks.extend(departed_risks)
+
+       # Calculate rates of change (example using simple differences)
+       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0  
+       dpt_rate_change = st.session_state.departed_risks[-1] - st.session_state.departed_risks[-5] if len(st.session_state.departed_risks) >= 5 else 0
+
+       # Calculate average departed/observed ratio and trend
+       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0 
+       avg_ratio_previous = np.mean(np.array(st.session_state.departed_risks[:-4]) / np.array(st.session_state.observed_risks[:-4])) if len(st.session_state.observed_risks) >= 5 and all(x != 0 for x in st.session_state.observed_risks[:-4]) else 0
+       ratio_trend = "Increased" if avg_ratio_current > avg_ratio_previous else "Decreased" if avg_ratio_current < avg_ratio_previous else "Unchanged"
+
+       # Display results
+       st.write(f"Observed Risks Rate Change: {obs_rate_change}")
+       st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
+       st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
+
+    #if st.button("Append Risks and Calculate Trends", on_click=append_risks_and_calculate_rates):
+    #    pass  # No need for other code here
+
+    st.divider()
 
     if st.session_state['show_graph']:
 
