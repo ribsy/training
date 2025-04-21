@@ -759,9 +759,75 @@ def play_burndown():
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
 
-       st.write(f"Observed Risks: {st.session_state.observed_risks}")
-       st.write(f"Departed Risks: {st.session_state.departed_risks}")
-            
+       # Create a Pandas DataFrame
+       df = pd.DataFrame({'Observed Risks': st.session_state.observed_risks, 'Time Period': range(1, len(st.session_state.observed_risks) + 1)})
+
+       # Calculate average trend line
+       average_risk = np.mean(st.session_state.observed_risks)
+       df['Average Trend'] = average_risk
+
+       # Calculate average rate for every 4 risks
+       average_rates = []
+       for i in range(0, len(st.session_state.observed_risks), 4):
+          average_rates.extend([np.mean(st.session_state.observed_risks[i:i + 4])] * 4)  # Extend for 4 periods
+
+       df['Average Rate'] = average_rates[:len(st.session_state.observed_risks)]  # Truncate if necessary   
+
+       #st.write(df)
+      
+
+       # Gamma-Poisson parameters
+       alpha_prior = 0.5  # Adjust as needed
+       beta_prior = 0.001 # Adjust as needed
+
+       # Calculate posterior parameters
+       alpha_posterior = alpha_prior + sum(st.session_state.observed_risks)
+       beta_posterior = beta_prior + len(st.session_state.observed_risks)
+
+       # Calculate credible interval for the average risk (rate)
+       lower_bound = gamma.ppf(0.025, alpha_posterior, scale=1/beta_posterior)
+       upper_bound = gamma.ppf(0.975, alpha_posterior, scale=1/beta_posterior)
+
+       # Add credible interval to DataFrame
+       df['Lower Bound'] = lower_bound
+       df['Upper Bound'] = upper_bound
+
+       # Create the time series graph using Plotly Express
+       fig = px.line(df, x='Time Period', y=['Observed Risks', 'Average Rate', 'Average Trend'],
+              title='Observed Risks Over Time with Average Trend and Credible Interval')
+
+
+       # Add credible interval as a filled area
+       fig.add_trace(go.Scatter(
+           x=df['Time Period'],
+           y=df['Upper Bound'],
+           mode='lines',
+           line=dict(width=0),
+           fillcolor='rgba(0,100,80,0.2)',
+           fill='tonexty',
+           name='Credible Interval'
+       ))
+       fig.add_trace(go.Scatter(
+           x=df['Time Period'],
+           y=df['Lower Bound'],
+           mode='lines',
+           line=dict(width=0),
+           fillcolor='rgba(0,100,80,0.2)',
+           fill='tonexty',
+           name='Credible Interval'
+       ))
+
+       # Customize the graph
+       fig.update_layout(
+           xaxis_title='Time Period',
+           yaxis_title='Observed Risks',
+           legend_title_text='Series',
+           showlegend=True
+       )
+
+       # Display the graph in Streamlit
+       st.plotly_chart(fig)
+       
 
     #if st.button("Append Risks and Calculate Trends", on_click=append_risks_and_calculate_rates):
     #    pass  # No need for other code here
