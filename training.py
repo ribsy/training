@@ -1,4 +1,3 @@
-
 import sqlite3
 import hashlib
 import streamlit as st
@@ -568,11 +567,11 @@ def append_risks_and_calculate_rates():
        st.session_state.departed_risks.extend(departed_risks)
 
        # Calculate rates of change (example using simple differences)
-       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0  
+       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0
        dpt_rate_change = st.session_state.departed_risks[-1] - st.session_state.departed_risks[-5] if len(st.session_state.departed_risks) >= 5 else 0
 
        # Calculate average departed/observed ratio and trend
-       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0 
+       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0
        avg_ratio_previous = np.mean(np.array(st.session_state.departed_risks[:-4]) / np.array(st.session_state.observed_risks[:-4])) if len(st.session_state.observed_risks) >= 5 and all(x != 0 for x in st.session_state.observed_risks[:-4]) else 0
        ratio_trend = "Increased" if avg_ratio_current > avg_ratio_previous else "Decreased" if avg_ratio_current < avg_ratio_previous else "Unchanged"
 
@@ -580,6 +579,77 @@ def append_risks_and_calculate_rates():
        st.write(f"Observed Risks Rate Change: {obs_rate_change}")
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
+
+def burn_trend_graph(risk_list,id_val, title_val):
+       # Create a Pandas DataFrame
+       df = pd.DataFrame({'Observed Risks': risk_list, 'Time Period': range(1, len(risk_list) + 1)})
+
+       # Calculate average trend line
+       average_risk = np.mean(risk_list)
+       df['Average Trend'] = average_risk
+
+       # Calculate average rate for every 4 risks
+       average_rates = []
+       for i in range(0, len(risk_list), 4):
+          average_rates.extend([np.mean(risk_list[i:i + 4])] * 4)  # Extend for 4 periods
+
+       df['Average Rate'] = average_rates[:len(risk_list)]  # Truncate if necessary
+
+       #st.write(df)
+
+
+       # Gamma-Poisson parameters
+       alpha_prior = 0.5  # Adjust as needed
+       beta_prior = 0.001 # Adjust as needed
+
+       # Calculate posterior parameters
+       alpha_posterior = alpha_prior + sum(risk_list)
+       beta_posterior = beta_prior + len(risk_list)
+
+       # Calculate credible interval for the average risk (rate)
+       lower_bound = gamma.ppf(0.025, alpha_posterior, scale=1/beta_posterior)
+       upper_bound = gamma.ppf(0.975, alpha_posterior, scale=1/beta_posterior)
+
+       # Add credible interval to DataFrame
+       df['Lower Bound'] = lower_bound
+       df['Upper Bound'] = upper_bound
+
+       # Create the time series graph using Plotly Express
+       fig = px.line(df, x='Time Period', y=['Observed Risks', 'Average Rate', 'Average Trend'],
+              title=title_val)
+
+
+       # Add credible interval as a filled area
+       fig.add_trace(go.Scatter(
+           x=df['Time Period'],
+           y=df['Upper Bound'],
+           mode='lines',
+           line=dict(width=0),
+           fillcolor='rgba(0,100,80,0.2)',
+           fill='tonexty',
+           name='Credible Interval'
+       ))
+       fig.add_trace(go.Scatter(
+           x=df['Time Period'],
+           y=df['Lower Bound'],
+           mode='lines',
+           line=dict(width=0),
+           fillcolor='rgba(0,100,80,0.2)',
+           fill='tonexty',
+           name='Credible Interval'
+       ))
+
+       # Customize the graph
+       fig.update_layout(
+           xaxis_title='Time Period',
+           yaxis_title='Observed Risks',
+           legend_title_text='Series',
+           showlegend=True
+       )
+
+       # Display the graph in Streamlit
+       st.plotly_chart(fig, key=id_val)
+
 
 def play_burndown():
 
@@ -715,10 +785,10 @@ def play_burndown():
         estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
 
         # Calculate 95% credible interval
-        lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior) 
+        lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior)
         upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
 
-        lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior) 
+        lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
         upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
 
         st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
@@ -733,7 +803,7 @@ def play_burndown():
 
     if st.button("Aggregate Values", on_click=transfer_values):
         pass  # No need for other code here
-    
+
     st.divider()
 
     if st.button("Append Risks and Calculate Trends"):
@@ -746,11 +816,11 @@ def play_burndown():
        st.session_state.departed_risks.extend(departed_risks)
 
        # Calculate rates of change (example using simple differences)
-       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0  
+       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0
        dpt_rate_change = st.session_state.departed_risks[-1] - st.session_state.departed_risks[-5] if len(st.session_state.departed_risks) >= 5 else 0
 
        # Calculate average departed/observed ratio and trend
-       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0 
+       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0
        avg_ratio_previous = np.mean(np.array(st.session_state.departed_risks[:-4]) / np.array(st.session_state.observed_risks[:-4])) if len(st.session_state.observed_risks) >= 5 and all(x != 0 for x in st.session_state.observed_risks[:-4]) else 0
        ratio_trend = "Increased" if avg_ratio_current > avg_ratio_previous else "Decreased" if avg_ratio_current < avg_ratio_previous else "Unchanged"
 
@@ -759,75 +829,13 @@ def play_burndown():
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
 
-       # Create a Pandas DataFrame
-       df = pd.DataFrame({'Observed Risks': st.session_state.observed_risks, 'Time Period': range(1, len(st.session_state.observed_risks) + 1)})
+       burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
+                        title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
 
-       # Calculate average trend line
-       average_risk = np.mean(st.session_state.observed_risks)
-       df['Average Trend'] = average_risk
-
-       # Calculate average rate for every 4 risks
-       average_rates = []
-       for i in range(0, len(st.session_state.observed_risks), 4):
-          average_rates.extend([np.mean(st.session_state.observed_risks[i:i + 4])] * 4)  # Extend for 4 periods
-
-       df['Average Rate'] = average_rates[:len(st.session_state.observed_risks)]  # Truncate if necessary   
-
-       #st.write(df)
-      
-
-       # Gamma-Poisson parameters
-       alpha_prior = 0.5  # Adjust as needed
-       beta_prior = 0.001 # Adjust as needed
-
-       # Calculate posterior parameters
-       alpha_posterior = alpha_prior + sum(st.session_state.observed_risks)
-       beta_posterior = beta_prior + len(st.session_state.observed_risks)
-
-       # Calculate credible interval for the average risk (rate)
-       lower_bound = gamma.ppf(0.025, alpha_posterior, scale=1/beta_posterior)
-       upper_bound = gamma.ppf(0.975, alpha_posterior, scale=1/beta_posterior)
-
-       # Add credible interval to DataFrame
-       df['Lower Bound'] = lower_bound
-       df['Upper Bound'] = upper_bound
-
-       # Create the time series graph using Plotly Express
-       fig = px.line(df, x='Time Period', y=['Observed Risks', 'Average Rate', 'Average Trend'],
-              title='Observed Risks Over Time with Average Trend and Credible Interval')
+       burn_trend_graph(risk_list=st.session_state.departed_risks, id_val="test_depart",
+                        title_val="Risk Departures Over Time with Average Trend and Credible Interval")
 
 
-       # Add credible interval as a filled area
-       fig.add_trace(go.Scatter(
-           x=df['Time Period'],
-           y=df['Upper Bound'],
-           mode='lines',
-           line=dict(width=0),
-           fillcolor='rgba(0,100,80,0.2)',
-           fill='tonexty',
-           name='Credible Interval'
-       ))
-       fig.add_trace(go.Scatter(
-           x=df['Time Period'],
-           y=df['Lower Bound'],
-           mode='lines',
-           line=dict(width=0),
-           fillcolor='rgba(0,100,80,0.2)',
-           fill='tonexty',
-           name='Credible Interval'
-       ))
-
-       # Customize the graph
-       fig.update_layout(
-           xaxis_title='Time Period',
-           yaxis_title='Observed Risks',
-           legend_title_text='Series',
-           showlegend=True
-       )
-
-       # Display the graph in Streamlit
-       st.plotly_chart(fig)
-       
 
     #if st.button("Append Risks and Calculate Trends", on_click=append_risks_and_calculate_rates):
     #    pass  # No need for other code here
