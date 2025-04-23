@@ -869,6 +869,8 @@ def play_burndown():
         # Calculate HDI
         hdi = calculate_hdi(dist)
 
+        plt.style.use('dark_background')
+
         # Plot the beta distribution
         fig, ax = plt.subplots()
         #ax.plot(x, pdf, 'r-', lw=2, label=f'Beta({alpha:.2f}, {beta_val:.2f})')
