@@ -880,7 +880,7 @@ def play_burndown():
         ax.axvspan(hdi[0], hdi[1], color='gray', alpha=0.3, label='Confidence')
 
         # Plot the vertical line
-        ax.axvline(st.session_state['sla'], color='white', linestyle='--', label=f'SLA = {round(st.session_state["sla"],3)}')
+        ax.axvline(st.session_state['sla'], color='red', linestyle='--', label=f'SLA = {round(st.session_state["sla"],3)}')
 
         ax.set_xlabel('RATE (Probability)')
         ax.set_ylabel('Strength (Density)')
