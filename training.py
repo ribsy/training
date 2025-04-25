@@ -867,49 +867,49 @@ def play_burndown():
     st.divider()
 
 
-    if st.button("Calculate Arrival, Departure, and Removal Rates"):
+    # if st.button("Calculate Arrival, Departure, and Removal Rates"):
 
-        # Gamma-Poisson rate estimation
-        observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
-        departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
+    #     # Gamma-Poisson rate estimation
+    #     observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
+    #     departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
 
-        # Prior parameters (adjust as needed)
-        alpha_prior = .5  # Shape parameter
-        beta_prior = 0   # Rate parameter
+    #     # Prior parameters (adjust as needed)
+    #     alpha_prior = .5  # Shape parameter
+    #     beta_prior = 0   # Rate parameter
 
-        # Calculate posterior parameters
-        alpha_obs_posterior = alpha_prior + sum(observed_risks)
-        beta_obs_posterior = beta_prior + len(observed_risks)
+    #     # Calculate posterior parameters
+    #     alpha_obs_posterior = alpha_prior + sum(observed_risks)
+    #     beta_obs_posterior = beta_prior + len(observed_risks)
 
-        alpha_dpt_posterior = alpha_prior + sum(departed_risks)
-        beta_dpt_posterior = beta_prior + len(departed_risks)
+    #     alpha_dpt_posterior = alpha_prior + sum(departed_risks)
+    #     beta_dpt_posterior = beta_prior + len(departed_risks)
 
-        # Estimate rate (mean of posterior Gamma distribution)
-        estimated_obs_rate = alpha_obs_posterior / beta_obs_posterior
+    #     # Estimate rate (mean of posterior Gamma distribution)
+    #     estimated_obs_rate = alpha_obs_posterior / beta_obs_posterior
 
-        estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
+    #     estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
 
-        # Calculate 95% credible interval
-        lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior)
-        upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
+    #     # Calculate 95% credible interval
+    #     lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior)
+    #     upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
 
-        lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
-        upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
+    #     lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
+    #     upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
 
-        st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
-        st.write(f"95% Arrival Credible Interval: ({lower_obs_bound:.2f}, {upper_obs_bound:.2f})")
+    #     st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
+    #     st.write(f"95% Arrival Credible Interval: ({lower_obs_bound:.2f}, {upper_obs_bound:.2f})")
 
-        st.write(f"Estimated Departure Rate: {estimated_dpt_rate:.2f}")
-        st.write(f"95% Departure Credible Interval: ({lower_dpt_bound:.2f}, {upper_dpt_bound:.2f})")
+    #     st.write(f"Estimated Departure Rate: {estimated_dpt_rate:.2f}")
+    #     st.write(f"95% Departure Credible Interval: ({lower_dpt_bound:.2f}, {upper_dpt_bound:.2f})")
 
-        st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
+    #     st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
 
-    st.divider()
+    # st.divider()
 
-    if st.button("Aggregate Values", on_click=transfer_values):
-        pass  # No need for other code here
+    # if st.button("Aggregate Values", on_click=transfer_values):
+    #     pass  # No need for other code here
 
-    st.divider()
+    # st.divider()
 
     if st.button("Append Risks And Calculate Trends"):
       # Get current risk values from session state
