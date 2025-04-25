@@ -975,6 +975,18 @@ def play_burndown():
 
     st.divider()
 
+    # Reset button
+    if st.button("Reset Burndown"):
+        # Clear session variables
+        for key in st.session_state.keys():
+            if key.startswith('m') or key in ['total_open', 'total_fixed', 'observed_risks', 'departed_risks', 'sla', 'sla_val', 'show_graph']:
+                del st.session_state[key]
+
+        # Rerun the script to reflect the changes
+        st.rerun()
+            
+    st.divider()
+        
     if st.session_state['show_graph']:
 
         if st.session_state['total_fixed'] > st.session_state['total_open']:
