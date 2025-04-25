@@ -1,3 +1,4 @@
+
 import sqlite3
 import hashlib
 import streamlit as st
@@ -651,6 +652,110 @@ def burn_trend_graph(risk_list,id_val, title_val):
        st.plotly_chart(fig, key=id_val)
 
 
+def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sla_value):
+    """
+    Plots the trend of departed risks over observed risks with a beta distribution average and
+    a cumulative credible interval that is a smooth curve following the average, along with an SLA line.
+    Includes the SLA line in the legend.
+
+    Args:
+        observed_risks: A list of observed risks over time.
+        departed_risks: A list of departed risks over time.
+        id_val: A unique identifier for the graph.
+        title_val: The title of the graph.
+        sla_value: The value of the SLA to be plotted as a horizontal line.
+    """
+    # Calculate cumulative observed and departed risks
+    cumulative_observed = np.cumsum(observed_risks)
+    cumulative_departed = np.cumsum(departed_risks)
+
+    # Calculate cumulative ratios and average trend
+    cumulative_ratios = cumulative_departed / cumulative_observed
+    cumulative_ratios = np.nan_to_num(cumulative_ratios, nan=0)  # Handle potential NaN values
+    average_ratio = np.mean(cumulative_ratios)
+
+    # Create a Pandas DataFrame
+    df = pd.DataFrame({'Ratio': cumulative_ratios,
+                       'Time Period': range(1, len(cumulative_ratios) + 1)})
+    df['Average Trend'] = average_ratio
+
+    # Calculate credible interval for each time period
+    lower_bounds = []
+    upper_bounds = []
+    for i in range(len(cumulative_ratios)):
+        # Calculate cumulative totals up to current time period
+        alpha_up_to_i = cumulative_departed[i] + 1
+        beta_up_to_i = cumulative_observed[i] - cumulative_departed[i] + 1
+        lower_bound = beta.ppf(0.025, alpha_up_to_i, beta_up_to_i)  # Use updated parameters
+        upper_bound = beta.ppf(0.975, alpha_up_to_i, beta_up_to_i)  # Use updated parameters
+        lower_bounds.append(lower_bound)
+        upper_bounds.append(upper_bound)
+
+    df['Lower Bound'] = lower_bounds
+    df['Upper Bound'] = upper_bounds
+
+    # Create the time series graph using Plotly Express with smoothing
+    fig = px.line(df, x='Time Period', y=['Ratio'], title=title_val)
+    fig.update_traces(mode='lines+markers', line=dict(shape='spline', smoothing=1.3))  # Adjust smoothing as needed
+
+    # Add SLA line as a trace for legend
+    fig.add_trace(
+        go.Scatter(
+            x=[df['Time Period'].min(), df['Time Period'].max()],  # X-coordinates for the line
+            y=[sla_value, sla_value],  # Y-coordinates for the line
+            mode="lines",
+            line=dict(color="Beige", width=2, dash="dash"),
+            name="SLA"  # Name for the legend
+        )
+    )
+    
+    # Add credible interval as a filled area with smoothing and fill='toself'
+    # Plot the lower bound trace first
+    fig.add_trace(go.Scatter(
+        x=df['Time Period'],
+        y=df['Lower Bound'],
+        mode='lines',
+        line=dict(width=0, shape='spline', smoothing=1.3),  # Smooth the credible interval lines
+        fillcolor='rgba(0,100,80,0.2)',
+        fill=None,  # No fill for the lower bound trace
+        name='Credible Interval'  # Use the same name for both upper and lower bounds
+    ))
+    fig.add_trace(go.Scatter(
+        x=df['Time Period'],
+        y=df['Upper Bound'],
+        mode='lines',
+        line=dict(width=0, shape='spline', smoothing=1.3),  # Smooth the credible interval lines
+        fillcolor='rgba(0,100,80,0.2)',
+        fill='tonexty',  # Fill to the previous trace (lower bound) to create the credible interval area
+        name='Credible Interval'  # Use the same name for both upper and lower bounds
+    ))
+
+
+    # Find the index of the 'Ratio' trace
+    try:
+        ratio_index = fig.data.index(next((trace for trace in fig.data if trace.name == 'Ratio'), None))
+    except ValueError:  # Handle case where 'Ratio' trace is not found
+        ratio_index = None
+
+    # If 'Ratio' trace is found, move it to the beginning
+    if ratio_index is not None and ratio_index != 0:  # Check if it's not already first
+        ratio_trace = fig.data[ratio_index]
+        new_data = [ratio_trace] + list(fig.data[:ratio_index]) + list(fig.data[ratio_index+1:])
+        fig.data = new_data
+
+    # Customize the graph
+    fig.update_layout(
+        yaxis=dict(range=[0, 1]),  # Set y-axis range to 0-1
+        xaxis=dict(range=[1, df['Time Period'].max()]),  # Start x-axis at 1
+        xaxis_title='Time Period',
+        yaxis_title='Departed/Observed Ratio',
+        legend_title_text='Series',
+        showlegend=True
+    )
+
+    # Display the graph in Streamlit
+    st.plotly_chart(fig, key=id_val)
+
 def play_burndown():
 
     # Initialize Session State for Lists
@@ -806,7 +911,7 @@ def play_burndown():
 
     st.divider()
 
-    if st.button("Append Risks and Calculate Trends"):
+    if st.button("Append Risks And Calculate Trends"):
       # Get current risk values from session state
        observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
        departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
@@ -828,6 +933,34 @@ def play_burndown():
        st.write(f"Observed Risks Rate Change: {obs_rate_change}")
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
+
+       burn_ratio_trend_graph(st.session_state.observed_risks, st.session_state.departed_risks, "burn_trend", "Cummulative Risk Burndown Trend With Uncertainty and SLA", st.session_state['sla'])
+
+       burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
+                        title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
+
+       burn_trend_graph(risk_list=st.session_state.departed_risks, id_val="test_depart",
+                        title_val="Risk Departures Over Time with Average Trend and Credible Interval")
+
+    st.divider()
+
+    if st.button("Calculate Trends"):
+
+       # Calculate rates of change (example using simple differences)
+       obs_rate_change = st.session_state.observed_risks[-1] - st.session_state.observed_risks[-5] if len(st.session_state.observed_risks) >= 5 else 0
+       dpt_rate_change = st.session_state.departed_risks[-1] - st.session_state.departed_risks[-5] if len(st.session_state.departed_risks) >= 5 else 0
+
+       # Calculate average departed/observed ratio and trend
+       avg_ratio_current = np.mean(np.array(st.session_state.departed_risks) / np.array(st.session_state.observed_risks)) if st.session_state.observed_risks and all(x != 0 for x in st.session_state.observed_risks) else 0
+       avg_ratio_previous = np.mean(np.array(st.session_state.departed_risks[:-4]) / np.array(st.session_state.observed_risks[:-4])) if len(st.session_state.observed_risks) >= 5 and all(x != 0 for x in st.session_state.observed_risks[:-4]) else 0
+       ratio_trend = "Increased" if avg_ratio_current > avg_ratio_previous else "Decreased" if avg_ratio_current < avg_ratio_previous else "Unchanged"
+
+       # Display results
+       st.write(f"Observed Risks Rate Change: {obs_rate_change}")
+       st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
+       st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
+
+       burn_ratio_trend_graph(st.session_state.observed_risks, st.session_state.departed_risks, "burn_trend", "Cummulative Risk Burndown Trend With Uncertainty and SLA", st.session_state['sla'])
 
        burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
                         title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
@@ -884,7 +1017,7 @@ def play_burndown():
 
         ax.set_xlabel('RATE (Probability)')
         ax.set_ylabel('Strength (Density)')
-        ax.set_title('Burndown Rate With Uncertainty')
+        ax.set_title('Burndown Rate For Last 4 Time Periods – With Uncertainty')
         ax.legend()
         ax.grid(True)
 
