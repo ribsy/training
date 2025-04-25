@@ -1136,8 +1136,8 @@ def random_number_game_with_brier_score():
       """,
       unsafe_allow_html=True,
     )
-    #st.image("data/rev_bayes_pool.png")
-    st.image("./data/rev_bayes_pool.png")
+    st.image("data/rev_bayes_pool.png")
+    #st.image("./data/rev_bayes_pool.png")
 
     a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty.\n\n"
     b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (Your range based forecasts will be scored.) "
