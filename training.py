@@ -654,9 +654,12 @@ def burn_trend_graph(risk_list,id_val, title_val):
 
 def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sla_value):
     """
-    Plots the trend of departed risks over observed risks with a beta distribution average and
-    a cumulative credible interval that is a smooth curve following the average, along with an SLA line.
-    Includes the SLA line in the legend.
+    Plots the trend of departed risks over observed risks with a beta distribution average,
+    a cumulative credible interval that is a smooth curve following the average, and an SLA line.
+    Includes the SLA line in the legend, projects the average ratio four time periods out with uncertainty,
+    and gives more weight to the last two ratios for the trend calculation.
+    The projected ratio with uncertainty is bounded to stay within the range of 0 to 1.
+    The trend line is also capped at 1 and is always visible on the graph.
 
     Args:
         observed_risks: A list of observed risks over time.
@@ -694,58 +697,116 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
     df['Lower Bound'] = lower_bounds
     df['Upper Bound'] = upper_bounds
 
+    # Project average ratio four time periods out with uncertainty
+    last_two_ratios = cumulative_ratios[-2:]  # Focus on the last two ratios
+    slope = (last_two_ratios[-1] - last_two_ratios[0])  # More weight on recent trend
+    projected_ratios = [cumulative_ratios[-1] + i * slope for i in range(1, 5)]
+    projected_time_periods = [df['Time Period'].max() + i for i in range(1, 5)]
+
+    # Add uncertainty (e.g., using standard deviation of recent ratios)
+    std_dev = np.std(cumulative_ratios[-5:])  # Adjust the window as needed
+    uncertainty = [std_dev * i for i in range(1, 5)]
+
+    # Bound the uncertainty and projected ratios so they stay within [0, 1]
+    projected_ratios = [min(1, r) for r in projected_ratios]  # Cap projected ratios at 1
+    lower_bounds_proj = [max(0, r - u) for r, u in zip(projected_ratios, uncertainty)]
+    upper_bounds_proj = [min(1, r + u) for r, u in zip(projected_ratios, uncertainty)]
+
+    # Add projected data to DataFrame for plotting
+    projected_df = pd.DataFrame({
+        'Ratio': projected_ratios,
+        'Time Period': projected_time_periods,
+        'Lower Bound': lower_bounds_proj,
+        'Upper Bound': upper_bounds_proj
+    })
+    # Ensure the average trend is at or below 1
+    projected_df['Average Trend'] = min(1, np.mean(projected_ratios))  
+
+    df = pd.concat([df, projected_df])
+
     # Create the time series graph using Plotly Express with smoothing
     fig = px.line(df, x='Time Period', y=['Ratio'], title=title_val)
-    fig.update_traces(mode='lines+markers', line=dict(shape='spline', smoothing=1.3))  # Adjust smoothing as needed
+    fig.update_traces(mode='lines+markers', line=dict(shape='spline', smoothing=1.3))
 
     # Add SLA line as a trace for legend
     fig.add_trace(
         go.Scatter(
-            x=[df['Time Period'].min(), df['Time Period'].max()],  # X-coordinates for the line
-            y=[sla_value, sla_value],  # Y-coordinates for the line
+            x=[df['Time Period'].min(), df['Time Period'].max()],
+            y=[sla_value, sla_value],
             mode="lines",
             line=dict(color="Beige", width=2, dash="dash"),
-            name="SLA"  # Name for the legend
+            name="SLA"
         )
     )
-    
+
     # Add credible interval as a filled area with smoothing and fill='toself'
-    # Plot the lower bound trace first
     fig.add_trace(go.Scatter(
         x=df['Time Period'],
         y=df['Lower Bound'],
         mode='lines',
-        line=dict(width=0, shape='spline', smoothing=1.3),  # Smooth the credible interval lines
+        line=dict(width=0, shape='spline', smoothing=1.3),
         fillcolor='rgba(0,100,80,0.2)',
-        fill=None,  # No fill for the lower bound trace
-        name='Credible Interval'  # Use the same name for both upper and lower bounds
+        fill=None,  # No fill for lower bound
+        name='Credible Interval',
+        showlegend=False  # Hide this trace from the legend
     ))
     fig.add_trace(go.Scatter(
         x=df['Time Period'],
         y=df['Upper Bound'],
         mode='lines',
-        line=dict(width=0, shape='spline', smoothing=1.3),  # Smooth the credible interval lines
+        line=dict(width=0, shape='spline', smoothing=1.3),
         fillcolor='rgba(0,100,80,0.2)',
-        fill='tonexty',  # Fill to the previous trace (lower bound) to create the credible interval area
+        fill='tonexty',  # Fill to previous trace for credible interval area
         name='Credible Interval'  # Use the same name for both upper and lower bounds
     ))
 
-
-    # Find the index of the 'Ratio' trace
+    # Find the index of the 'Ratio' trace and move it to the beginning if needed
     try:
         ratio_index = fig.data.index(next((trace for trace in fig.data if trace.name == 'Ratio'), None))
-    except ValueError:  # Handle case where 'Ratio' trace is not found
-        ratio_index = None
+        if ratio_index is not None and ratio_index != 0:
+            ratio_trace = fig.data[ratio_index]
+            new_data = [ratio_trace] + list(fig.data[:ratio_index]) + list(fig.data[ratio_index + 1:])
+            fig.data = new_data
+    except ValueError:
+        pass
 
-    # If 'Ratio' trace is found, move it to the beginning
-    if ratio_index is not None and ratio_index != 0:  # Check if it's not already first
-        ratio_trace = fig.data[ratio_index]
-        new_data = [ratio_trace] + list(fig.data[:ratio_index]) + list(fig.data[ratio_index+1:])
-        fig.data = new_data
+    # Plot projected values with uncertainty
+    fig.add_trace(
+        go.Scatter(
+            x=projected_df['Time Period'],
+            y=projected_df['Ratio'],
+            mode='lines+markers',
+            line=dict(color='red', dash='dot'),
+            name='Projected Ratio'
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=projected_df['Time Period'],
+            y=projected_df['Lower Bound'],
+            mode='lines',
+            line=dict(color='red', width=0),
+            fillcolor='rgba(255,0,0,0.2)',
+            fill='tonexty',  # Fill to previous trace for uncertainty area
+            name='Projection Uncertainty',
+            showlegend=False  # Hide this trace from the legend
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=projected_df['Time Period'],
+            y=projected_df['Upper Bound'],
+            mode='lines',
+            line=dict(color='red', width=0),
+            fillcolor='rgba(255,0,0,0.2)',
+            fill='tonexty',  # Fill to previous trace for uncertainty area
+            name='Projection Uncertainty'  # Use the same name for both upper and lower bounds
+        )
+    )
 
-    # Customize the graph
+    # Customize the graph layout
     fig.update_layout(
-        yaxis=dict(range=[0, 1]),  # Set y-axis range to 0-1
+        yaxis=dict(range=[0, 1.1]),  # Set y-axis range to ensure visibility of trend line at 1
         xaxis=dict(range=[1, df['Time Period'].max()]),  # Start x-axis at 1
         xaxis_title='Time Period',
         yaxis_title='Departed/Observed Ratio',
