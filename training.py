@@ -1550,46 +1550,18 @@ def play_crq():
 
     st.write("")
     #st.write("")
-
-    col_header1, col_header2 = st.columns(2)
-        
-    with col_header1:
-        st.markdown("##### AI Input")
-    with col_header2:
-        st.markdown("##### Submit")
     
-        # Row 1
-    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed  
-    with col1:
-      #st.markdown("#####")
-      input_1 = st.text_input("Input 1", key="input_1")
-    with col2:
-      #st.markdown("##")
-      if st.button("Process 1", key="button_1"):
-        handle_input("input_1", input_1)
-
-    
-    # Row 2
-    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
-    with col1:
-      #st.markdown("######")
-      input_2 = st.text_input("Input 2", key="input_2")
-    with col2:
-      #st.markdown("#####")
-      #st.write("")
-      if st.button("Process 2", key="button_2"):
-        handle_input("input_2", input_2)
-
-    # Row 3
-    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
-        
-    with col1:
-      #st.markdown("#######")
-      input_3 = st.text_input("Input 3", key="input_3")
-    with col2:
-      #st.markdown("####")
-      if st.button("Process 3", key="button_3"):
-        handle_input("input_3", input_3)
+    input_1 = st.text_input("Company Name", key="input_1")
+    if st.button("AI Revenue & Market Cap Lookup", key="button_1"):
+      handle_input("input_1", input_1)
+            
+    input_2 = st.text_input("Insurance Upload", key="input_2")
+    if st.button("Process 2", key="button_2"):
+      handle_input("input_2", input_2)
+            
+    input_3 = st.text_input("Input 3", key="input_3")
+    if st.button("Process 3", key="button_3"):
+      handle_input("input_3", input_3)
         
     st.write("")
 
