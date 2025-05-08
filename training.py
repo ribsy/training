@@ -1548,7 +1548,7 @@ def play_crq():
     company_revenue = st.number_input("Enter company revenue:", value=0.0)
     market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
 
-    st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+    st.divider()
         
 
 # Main function to handle different states
