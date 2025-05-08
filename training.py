@@ -1554,7 +1554,7 @@ def play_crq():
     # Row 1
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
-      st.markdown("######")
+      st.markdown("#####")
       input_1 = st.text_input("Input 1", key="input_1")
     with col2:
       st.markdown("##")
