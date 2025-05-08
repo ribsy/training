@@ -1539,7 +1539,9 @@ def create_influence_diagram_from_text(text):
 
 def play_crq():
     st.title("CRQ")
-
+    
+    markdown_box("","AI Will attempt to answer every question on this page. The results will typically require your quick validation.")
+                 
     user_input = st.text_input("AI Assisted Company Lookup")
     if st.button("Submit"):
       st.write("You entered:", user_input)
