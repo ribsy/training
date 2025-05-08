@@ -1547,10 +1547,30 @@ def play_crq():
 
     crq_msg = a + b + c + d
     markdown_box("Rapid Risk Assessment Usage", crq_msg)
-                 
-    user_input = st.text_input("AI Assisted Company Lookup")
-    if st.button("Submit"):
-      st.write("You entered:", user_input)
+
+    # Row 1
+    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    with col1:
+      input_1 = st.text_input("Input 1", key="input_1")
+    with col2:
+      if st.button("Process 1", key="button_1"):
+        handle_input("input_1", input_1)
+
+    # Row 2
+    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    with col1:
+      input_2 = st.text_input("Input 2", key="input_2")
+    with col2:
+      if st.button("Process 2", key="button_2"):
+        handle_input("input_2", input_2)
+
+    # Row 3
+    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    with col1:
+      input_3 = st.text_input("Input 3", key="input_3")
+    with col2:
+      if st.button("Process 3", key="button_3"):
+        handle_input("input_3", input_3)
         
     st.write("")
 
