@@ -1551,16 +1551,17 @@ def play_crq():
     st.write("")
     #st.write("")
     
-    input_1 = st.text_input("Company Name", key="input_1")
-    if st.button("AI Revenue & Market Cap Lookup", key="button_1"):
+    input_1 = st.text_input("AI Revenue & Market Cap Lookup", key="input_1")
+    if st.button("Company Lookup", key="button_1"):
       handle_input("input_1", input_1)
-            
-    input_2 = st.text_input("Insurance Upload", key="input_2")
-    if st.button("Process 2", key="button_2"):
+
+        
+    input_2 = st.text_input("Insurance Upload & Analysis", key="input_2")
+    if st.button("Insurance Upload", key="button_2"):
       handle_input("input_2", input_2)
             
-    input_3 = st.text_input("Input 3", key="input_3")
-    if st.button("Process 3", key="button_3"):
+    input_3 = st.text_input("BIA Upload & Analysis", key="input_3")
+    if st.button("BIA Upload", key="button_3"):
       handle_input("input_3", input_3)
         
     st.write("")
