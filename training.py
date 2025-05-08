@@ -1561,6 +1561,7 @@ def play_crq():
         </style>
         """,
         unsafe_allow_html=True,
+    )
 
     # Row 1
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
