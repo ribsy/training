@@ -1558,7 +1558,7 @@ def play_crq():
     company_revenue = st.number_input("Enter company revenue:", value=0.0)
     market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
         
-    st.write("")
+    st.divider()
         
     input_2 = st.text_input("Insurance Upload & Analysis", key="input_2")
     if st.button("Insurance Upload", key="button_2"):
@@ -1566,7 +1566,7 @@ def play_crq():
 
     limit_val = st.number_input("Enter Insurance Limit:", value=0.0)
 
-    st.write("")
+    st.divider()
         
     input_3 = st.text_input("BIA Upload & Analysis", key="input_3")
     if st.button("BIA Upload", key="button_3"):
