@@ -1554,20 +1554,38 @@ def play_crq():
     input_1 = st.text_input("COMPANY NAME", key="input_1")
     if st.button("Revenue And Market Cap Search", key="button_1"):
       handle_input("input_1", input_1)
-
+     
+    company_revenue = st.number_input("Enter company revenue:", value=0.0)
+    market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
+        
+    st.write("")
         
     input_2 = st.text_input("Insurance Upload & Analysis", key="input_2")
     if st.button("Insurance Upload", key="button_2"):
       handle_input("input_2", input_2)
-            
+
+     limit_val = st.number_input("Enter Insurance Limit:", value=0.0)
+
+    st.write("")
+        
     input_3 = st.text_input("BIA Upload & Analysis", key="input_3")
     if st.button("BIA Upload", key="button_3"):
       handle_input("input_3", input_3)
+
+    slider_value_1 = st.slider(
+      "SLA Outage Day Range",
+      0.0, 100.0, (25.0, 75.0)  # (min_value, max_value, (default_lower, default_upper))
+    ) 
+
+    slider_value-2 = st.slider(
+      "Record Range",
+      0.0, 100.0, (25.0, 75.0)  # (min_value, max_value, (default_lower, default_upper))
+    )
         
     st.write("")
 
-    company_revenue = st.number_input("Enter company revenue:", value=0.0)
-    market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
+   
+    
     st.write("Please enter values if not auto populated by AI")
 
     st.divider()
