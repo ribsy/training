@@ -1551,8 +1551,8 @@ def play_crq():
     st.write("")
     #st.write("")
     
-    input_1 = st.text_input("AI Revenue & Market Cap Lookup", key="input_1")
-    if st.button("Company Lookup", key="button_1"):
+    input_1 = st.text_input("COMPANY NAME", key="input_1")
+    if st.button("Revenue And Market Cap Search", key="button_1"):
       handle_input("input_1", input_1)
 
         
