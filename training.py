@@ -1550,26 +1550,32 @@ def play_crq():
 
     st.write("")
     #st.write("")
+
+    col_header1, col_header2 = st.columns(2)
         
-    # Row 1
-    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
-        
+    with col_header1:
+        st.markdown("##### AI Input")
+    with col_header2:
+        st.markdown("##### Submit")
+    
+        # Row 1
+    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed  
     with col1:
-      st.markdown("#####")
+      #st.markdown("#####")
       input_1 = st.text_input("Input 1", key="input_1")
     with col2:
-      st.markdown("##")
+      #st.markdown("##")
       if st.button("Process 1", key="button_1"):
         handle_input("input_1", input_1)
 
+    
     # Row 2
     col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
-        
     with col1:
-      st.markdown("######")
+      #st.markdown("######")
       input_2 = st.text_input("Input 2", key="input_2")
     with col2:
-      st.markdown("#####")
+      #st.markdown("#####")
       #st.write("")
       if st.button("Process 2", key="button_2"):
         handle_input("input_2", input_2)
