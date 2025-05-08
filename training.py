@@ -1564,7 +1564,7 @@ def play_crq():
     if st.button("Insurance Upload", key="button_2"):
       handle_input("input_2", input_2)
 
-     limit_val = st.number_input("Enter Insurance Limit:", value=0.0)
+    limit_val = st.number_input("Enter Insurance Limit:", value=0.0)
 
     st.write("")
         
