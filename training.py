@@ -1538,9 +1538,15 @@ def create_influence_diagram_from_text(text):
     return fig
 
 def play_crq():
-    st.title("CRQ")
-    
-    markdown_box("","AI Will attempt to answer every question on this page. The results will typically require your quick validation.")
+    st.title("AI Assisted Rapid Risk Assessment")
+
+    a = "AI Will attempt to answer every question on this page. "
+    b = "The results will require your quick validation. "
+    c = "You can also upload your most recent Business Impact Assessment (BIA) "
+    d = "As well as a recent cyber insurance questionnaire provided by your broker."
+
+    crq_msg = a + b + c + d
+    markdown_box("Rapid Risk Assessment Usage", crq_msg)
                  
     user_input = st.text_input("AI Assisted Company Lookup")
     if st.button("Submit"):
