@@ -1549,7 +1549,7 @@ def play_crq():
     markdown_box("Rapid Risk Assessment Usage", crq_msg)
 
     st.write("")
-    st.write("")
+    #st.write("")
         
     # Row 1
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
@@ -1564,16 +1564,20 @@ def play_crq():
     # Row 2
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
+      st.markdown("#####")
       input_2 = st.text_input("Input 2", key="input_2")
     with col2:
+      st.markdown("##")
       if st.button("Process 2", key="button_2"):
         handle_input("input_2", input_2)
 
     # Row 3
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
+      st.markdown("#####")
       input_3 = st.text_input("Input 3", key="input_3")
     with col2:
+      st.markdown("##")
       if st.button("Process 3", key="button_3"):
         handle_input("input_3", input_3)
         
