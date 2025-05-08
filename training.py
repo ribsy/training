@@ -1552,7 +1552,7 @@ def play_crq():
     #st.write("")
         
     # Row 1
-    col1, col2 = st.columns([1,4])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
         
     with col1:
       st.markdown("#####")
@@ -1563,24 +1563,24 @@ def play_crq():
         handle_input("input_1", input_1)
 
     # Row 2
-    col1, col2 = st.columns([1,4])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
         
     with col1:
-      st.markdown("######")
+      st.markdown("#######")
       input_2 = st.text_input("Input 2", key="input_2")
     with col2:
-      st.markdown("###")
+      st.markdown("####")
       if st.button("Process 2", key="button_2"):
         handle_input("input_2", input_2)
 
     # Row 3
-    col1, col2 = st.columns([1,4])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4,1])  # Adjust column ratios as needed
         
     with col1:
-      st.markdown("######")
+      st.markdown("#######")
       input_3 = st.text_input("Input 3", key="input_3")
     with col2:
-      st.markdown("###")
+      st.markdown("####")
       if st.button("Process 3", key="button_3"):
         handle_input("input_3", input_3)
         
