@@ -1537,11 +1537,25 @@ def create_influence_diagram_from_text(text):
     fig = go.Figure(data=[edge_trace], layout=layout)
     return fig
 
+def play_crq():
+    st.title("CRQ")
+
+    user_input = st.text_input("AI Assisted Company Lookup")
+
+    if st.button("Submit"):
+      st.write("You entered:", user_input)
+
+    company_revenue = st.number_input("Enter company revenue:", value=0.0)
+    market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
+
+    st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
+        
+
 # Main function to handle different states
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "CRQ"])
 
     if choice == "Sign Up":
         signup()
@@ -1555,6 +1569,8 @@ def main():
         play_burndown()
     elif choice == "Play Pool" and 'role' in st.session_state:
         random_number_game_with_brier_score()
+    elif choice == "CRQ":
+        play_crq()
     elif choice == "Influence" and 'role' in st.session_state:
         st.title("Simple Influence Diagram")
 
