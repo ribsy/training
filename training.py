@@ -1561,10 +1561,9 @@ def play_crq():
         </style>
         """,
         unsafe_allow_html=True,
-    )
 
     # Row 1
-    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
       input_1 = st.text_input("Input 1", key="input_1")
     with col2:
@@ -1572,7 +1571,7 @@ def play_crq():
         handle_input("input_1", input_1)
 
     # Row 2
-    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
       input_2 = st.text_input("Input 2", key="input_2")
     with col2:
@@ -1580,7 +1579,7 @@ def play_crq():
         handle_input("input_2", input_2)
 
     # Row 3
-    col1, col2 = st.columns([3, 1])  # Adjust column ratios as needed
+    col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
       input_3 = st.text_input("Input 3", key="input_3")
     with col2:
