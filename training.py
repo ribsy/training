@@ -1548,6 +1548,7 @@ def play_crq():
     crq_msg = a + b + c + d
     markdown_box("Rapid Risk Assessment Usage", crq_msg)
 
+    st.write("")
     # Row 1
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
