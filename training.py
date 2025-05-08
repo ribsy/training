@@ -1545,9 +1545,9 @@ def play_crq():
     if st.button("Submit"):
       st.write("You entered:", user_input)
 
-    st.write("Please enter values if not auto populated by AI")
     company_revenue = st.number_input("Enter company revenue:", value=0.0)
     market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
+    st.write("Please enter values if not auto populated by AI")
 
     st.divider()
         
