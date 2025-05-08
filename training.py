@@ -1572,15 +1572,9 @@ def play_crq():
     if st.button("BIA Upload", key="button_3"):
       handle_input("input_3", input_3)
 
-    slider_value_1 = st.slider(
-      "SLA Outage Day Range",
-      0.0, 100.0, (25.0, 75.0)  # (min_value, max_value, (default_lower, default_upper))
-    ) 
+    low_val = st.number_input("SLA Lower Value:", value=0.0)
 
-    slider_value-2 = st.slider(
-      "Record Range",
-      0.0, 100.0, (25.0, 75.0)  # (min_value, max_value, (default_lower, default_upper))
-    )
+    ligh_val = st.number_input("SLA High Value:", value=0.0)
         
     st.write("")
 
