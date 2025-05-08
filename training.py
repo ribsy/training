@@ -1543,7 +1543,8 @@ def play_crq():
     user_input = st.text_input("AI Assisted Company Lookup")
     if st.button("Submit"):
       st.write("You entered:", user_input)
-        st.markdown("<br><br>")
+        
+    st.markdown("<br><br>")
 
     company_revenue = st.number_input("Enter company revenue:", value=0.0)
     market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
