@@ -1541,7 +1541,7 @@ def play_crq():
     st.title("CRQ")
 
     user_input = st.text_input("AI Assisted Company Lookup")
-
+    st.write("")
     if st.button("Submit"):
       st.write("You entered:", user_input)
 
