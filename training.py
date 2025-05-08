@@ -1548,21 +1548,6 @@ def play_crq():
     crq_msg = a + b + c + d
     markdown_box("Rapid Risk Assessment Usage", crq_msg)
 
-    st.markdown(
-        """
-        <style>
-        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] {
-            gap: 0;  /* Remove default gap between columns */
-        }
-        div[data-testid="stVerticalBlock"] > div {
-            display: flex;
-            align-items: center; /* Vertically center elements within a column */
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
     # Row 1
     col1, col2 = st.columns([4, 1])  # Adjust column ratios as needed
     with col1:
