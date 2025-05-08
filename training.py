@@ -1556,6 +1556,7 @@ def play_crq():
     with col1:
       input_1 = st.text_input("Input 1", key="input_1")
     with col2:
+      st.markdown("####")
       if st.button("Process 1", key="button_1"):
         handle_input("input_1", input_1)
 
