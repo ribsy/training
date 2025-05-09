@@ -1,4 +1,5 @@
 
+
 import sqlite3
 import hashlib
 import streamlit as st
@@ -13,10 +14,12 @@ import networkx as nx
 import plotly.graph_objects as go
 import re
 import matplotlib.font_manager as fm
-
-
 from scipy.stats import beta
 from scipy.stats import gamma
+import time
+import datetime
+import calendar
+import uuid
 
 
 st.set_page_config(
@@ -652,14 +655,17 @@ def burn_trend_graph(risk_list,id_val, title_val):
        st.plotly_chart(fig, key=id_val)
 
 
-def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sla_value):
+def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val,
+                           sla_value):
     """
-    Plots the trend of departed risks over observed risks with a beta distribution average,
-    a cumulative credible interval that is a smooth curve following the average, and an SLA line.
-    Includes the SLA line in the legend, projects the average ratio four time periods out with uncertainty,
+    Plots the trend of departed risks over observed risks with a beta
+    distribution average,a cumulative credible interval that is a smooth curve
+    following the average, and an SLA line. Includes the SLA line in the
+    legend, projects the average ratio four time periods out with uncertainty,
     and gives more weight to the last two ratios for the trend calculation.
-    The projected ratio with uncertainty is bounded to stay within the range of 0 to 1.
-    The trend line is also capped at 1 and is always visible on the graph.
+    The projected ratio with uncertainty is bounded to stay within the
+    range of 0 to 1. The trend line is also capped at 1 and is always
+    visible on the graph.
 
     Args:
         observed_risks: A list of observed risks over time.
@@ -674,7 +680,7 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
 
     # Calculate cumulative ratios and average trend
     cumulative_ratios = cumulative_departed / cumulative_observed
-    cumulative_ratios = np.nan_to_num(cumulative_ratios, nan=0)  # Handle potential NaN values
+    cumulative_ratios = np.nan_to_num(cumulative_ratios, nan=0)
     average_ratio = np.mean(cumulative_ratios)
 
     # Create a Pandas DataFrame
@@ -689,8 +695,8 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
         # Calculate cumulative totals up to current time period
         alpha_up_to_i = cumulative_departed[i] + 1
         beta_up_to_i = cumulative_observed[i] - cumulative_departed[i] + 1
-        lower_bound = beta.ppf(0.025, alpha_up_to_i, beta_up_to_i)  # Use updated parameters
-        upper_bound = beta.ppf(0.975, alpha_up_to_i, beta_up_to_i)  # Use updated parameters
+        lower_bound = beta.ppf(0.025, alpha_up_to_i, beta_up_to_i)
+        upper_bound = beta.ppf(0.975, alpha_up_to_i, beta_up_to_i)
         lower_bounds.append(lower_bound)
         upper_bounds.append(upper_bound)
 
@@ -699,7 +705,7 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
 
     # Project average ratio four time periods out with uncertainty
     last_two_ratios = cumulative_ratios[-2:]  # Focus on the last two ratios
-    slope = (last_two_ratios[-1] - last_two_ratios[0])  # More weight on recent trend
+    slope = (last_two_ratios[-1] - last_two_ratios[0])  # Weight recent trend
     projected_ratios = [cumulative_ratios[-1] + i * slope for i in range(1, 5)]
     projected_time_periods = [df['Time Period'].max() + i for i in range(1, 5)]
 
@@ -708,9 +714,11 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
     uncertainty = [std_dev * i for i in range(1, 5)]
 
     # Bound the uncertainty and projected ratios so they stay within [0, 1]
-    projected_ratios = [min(1, r) for r in projected_ratios]  # Cap projected ratios at 1
-    lower_bounds_proj = [max(0, r - u) for r, u in zip(projected_ratios, uncertainty)]
-    upper_bounds_proj = [min(1, r + u) for r, u in zip(projected_ratios, uncertainty)]
+    projected_ratios = [min(1, r) for r in projected_ratios]
+    lower_bounds_proj = [max(0, r - u) for r
+                         , u in zip(projected_ratios, uncertainty)]
+    upper_bounds_proj = [min(1, r + u) for r
+                         , u in zip(projected_ratios, uncertainty)]
 
     # Add projected data to DataFrame for plotting
     projected_df = pd.DataFrame({
@@ -720,13 +728,14 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
         'Upper Bound': upper_bounds_proj
     })
     # Ensure the average trend is at or below 1
-    projected_df['Average Trend'] = min(1, np.mean(projected_ratios))  
+    projected_df['Average Trend'] = min(1, np.mean(projected_ratios))
 
     df = pd.concat([df, projected_df])
 
     # Create the time series graph using Plotly Express with smoothing
     fig = px.line(df, x='Time Period', y=['Ratio'], title=title_val)
-    fig.update_traces(mode='lines+markers', line=dict(shape='spline', smoothing=1.3))
+    fig.update_traces(mode='lines+markers',
+                      line=dict(shape='spline', smoothing=1.3))
 
     # Add SLA line as a trace for legend
     fig.add_trace(
@@ -757,15 +766,17 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
         line=dict(width=0, shape='spline', smoothing=1.3),
         fillcolor='rgba(0,100,80,0.2)',
         fill='tonexty',  # Fill to previous trace for credible interval area
-        name='Credible Interval'  # Use the same name for both upper and lower bounds
+        name='Credible Interval'
     ))
 
-    # Find the index of the 'Ratio' trace and move it to the beginning if needed
+    # Find the index of the 'Ratio' trace and move to the beginning if needed
     try:
-        ratio_index = fig.data.index(next((trace for trace in fig.data if trace.name == 'Ratio'), None))
+        ratio_index = fig.data.index(next(
+            (trace for trace in fig.data if trace.name == 'Ratio'), None))
         if ratio_index is not None and ratio_index != 0:
             ratio_trace = fig.data[ratio_index]
-            new_data = [ratio_trace] + list(fig.data[:ratio_index]) + list(fig.data[ratio_index + 1:])
+            new_data = [ratio_trace] + list(
+                fig.data[:ratio_index]) + list(fig.data[ratio_index + 1:])
             fig.data = new_data
     except ValueError:
         pass
@@ -800,15 +811,15 @@ def burn_ratio_trend_graph(observed_risks, departed_risks, id_val, title_val, sl
             line=dict(color='red', width=0),
             fillcolor='rgba(255,0,0,0.2)',
             fill='tonexty',  # Fill to previous trace for uncertainty area
-            name='Projection Uncertainty'  # Use the same name for both upper and lower bounds
+            name='Projection Uncertainty'
         )
     )
 
     # Customize the graph layout
     fig.update_layout(
-        yaxis=dict(range=[0, 1.1]),  # Set y-axis range to ensure visibility of trend line at 1
-        xaxis=dict(range=[1, df['Time Period'].max()]),  # Start x-axis at 1
-        xaxis_title='Time Period',
+        yaxis=dict(range=[0, 1.1]),
+        xaxis=dict(range=[1, df['Time Period'].max()]),
+        xaxis_title='Time Period Months',
         yaxis_title='Departed/Observed Ratio',
         legend_title_text='Series',
         showlegend=True
@@ -1206,10 +1217,10 @@ def random_number_game_with_brier_score():
       """,
       unsafe_allow_html=True,
     )
-    st.image("data/rev_bayes_pool.png")
+    #st.image("data/rev_bayes_pool.png")
     #st.image("./data/rev_bayes_pool.png")
 
-    a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty. "
+    a = "This is a calibration game. It's goal is to help you understand accuracy, precision and its costs – while confronting some amount of irriducible uncertainty.\n\n"
     b = "First, you are learning to forecast using ranges. The closer your range is to the 'true position' of the white ball...the bigger your reward. (Your range based forecasts will be scored.) "
     c = "Conversely, the farther away your range is from the ball, or the more spread out your ranges is (beyond reason)...the bigger your penalties. "
     d = "Also, the more information you seek, the more it costs you. And that cost gets larger the more information you ask for. "
@@ -1534,52 +1545,360 @@ def create_influence_diagram_from_text(text):
     fig = go.Figure(data=[edge_trace], layout=layout)
     return fig
 
+def validate_csv(df):
+    """Validates if the DataFrame has the required columns and data types."""
+    required_columns = ["first_seen", "last_seen", "fixed"]
+    if not all(col in df.columns for col in required_columns):
+        st.error(f"CSV must have columns: {required_columns}")
+        return False
+
+    try:
+        df["first_seen"] = pd.to_datetime(df["first_seen"])
+        df["last_seen"] = pd.to_datetime(df["last_seen"])
+        if not df["fixed"].isin([0, 1]).all():
+            st.error("'fixed' column must contain only 0 or 1")
+            return False
+        return True
+    except (ValueError, TypeError):
+        st.error("Invalid date format or data type in columns")
+        return False
+
+
+def kaplan_meier(times, events):
+    """
+    Estimates the survival function using the Kaplan-Meier method.
+
+    Args:
+        times: Array of time durations for survival analysis.
+        events: Array of events (0 or 1) for survival analysis.
+
+    Returns:
+        A tuple containing:
+            - time_points: Array of unique time points where events occurred.
+            - survival_prob: Array of survival probabilities corresponding to the time points.
+    """
+    # Check if times is an array, if not convert it to an array.
+    if not isinstance(times, np.ndarray):
+        times = np.array(times, dtype=float)  
+
+    # Check if events is an array, if not convert it to an array.
+    if not isinstance(events, np.ndarray):
+        events = np.array(events, dtype=int)
+
+    # Handle NaN (Not a Number) values
+    nan_mask = np.isnan(times)
+    if nan_mask.any(): # check if there are actually NaN values
+        times = times[~nan_mask]
+        if len(times) != len(events): # if filtering changed the length
+            events = events[:len(times)] # adjust events to match
+            
+    n = len(times)
+    sorted_indices = np.argsort(times)
+    times = times[sorted_indices]
+    events = events[sorted_indices]
+
+    # Calculate survival probabilities
+    survival_prob = np.ones(n)  # Initialize survival probabilities to 1
+    time_points = []
+
+    for i in range(n):
+        if events[i] == 1:  # If an event occurred
+            survival_prob[i:] *= (1 - 1 / (n - i))  # Update survival probabilities
+            time_points.append(times[i])  # Add the time where the event occurred to time_points
+
+    # Return unique time points and corresponding survival probabilities
+    # Check for NumPy version and use appropriate approach for unique time points
+    try:
+        time_points, unique_indices = np.unique(time_points, return_indices=True) 
+    except TypeError:
+        # For older NumPy versions, use a loop-based approach
+        seen = set()
+        unique_time_points = []
+        unique_indices = []
+        for i, time in enumerate(time_points):
+            if time not in seen:
+                unique_time_points.append(time)
+                unique_indices.append(i)
+                seen.add(time)
+        time_points = unique_time_points  # Update time_points
+
+    survival_prob = survival_prob[unique_indices]  # Use the unique indices to get survival probabilities
+
+    return time_points, survival_prob
+
+
+def upload_and_plot_survival():
+    """Uploads a CSV, validates, creates survival DataFrame, and plots survival curve."""
+    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+            if not validate_csv(df):
+                return None
+
+            df["time"] = (df["last_seen"] - df["first_seen"]).dt.days
+            df["event"] = df["fixed"].astype(int)
+            survival_df = df[["time", "event"]]
+
+            time_points, survival_prob = kaplan_meier(
+                survival_df["time"].values, survival_df["event"].values
+            )
+
+            # --- Calculate confidence intervals (Greenwood formula) ---
+            n_at_risk = len(survival_df)
+            survival_prob_lower = []
+            survival_prob_upper = []
+
+            for i, time in enumerate(time_points):
+                n_events = survival_df[survival_df["time"]
+                                        == time]["event"].sum()
+                if n_at_risk > 0:
+                    variance = survival_prob[i] ** 2 * \
+                        (1 - survival_prob[i]) / n_at_risk
+
+                    # Use normal approximation for confidence intervals (adjust z-score for desired level)
+                    z_score = 1.96  # For 95% confidence interval
+                    lower_bound = survival_prob[i] - \
+                        z_score * np.sqrt(variance)
+                    upper_bound = survival_prob[i] + \
+                        z_score * np.sqrt(variance)
+
+                    survival_prob_lower.append(lower_bound)
+                    survival_prob_upper.append(upper_bound)
+
+                    n_at_risk -= n_events
+
+                else:
+                    survival_prob_lower.append(survival_prob[i])
+                    survival_prob_upper.append(survival_prob[i])
+
+            # Create DataFrame for Plotly
+            plot_df = pd.DataFrame({
+                'Time Period': time_points,
+                'Survival Probability': survival_prob,
+                'Lower Bound': survival_prob_lower,
+                'Upper Bound': survival_prob_upper
+            })
+
+            # --- Plot survival curve using Plotly with smoothing and uncertainty ---
+            fig = px.line(plot_df, x='Time Period', y='Survival Probability',
+                          title="Kaplan-Meier Survival Curve")
+            fig.update_traces(mode='lines', line=dict(
+                shape='spline', smoothing=1.3, color='blue'))  # Smoothing
+
+            # Add confidence interval as a filled area
+            fig.add_trace(go.Scatter(
+                x=plot_df['Time Period'],
+                y=plot_df['Upper Bound'],
+                mode='lines',
+                line=dict(width=0, shape='spline', smoothing=1.3),
+                fillcolor='rgba(0,100,80,0.2)',
+                fill='tonexty',
+                name='Confidence Interval'
+            ))
+            fig.add_trace(go.Scatter(
+                x=plot_df['Time Period'],
+                y=plot_df['Lower Bound'],
+                mode='lines',
+                line=dict(width=0, shape='spline', smoothing=1.3),
+                fillcolor='rgba(0,100,80,0.2)',
+                fill='tonexty',
+                name='Confidence Interval'
+            ))
+
+            # Customize layout for similar style
+            fig.update_layout(
+                yaxis=dict(range=[0, 1.1]),  # Set y-axis range
+                xaxis_title='Time Period',
+                yaxis_title='Survival Probability',
+                legend_title_text='Series',
+                showlegend=False,  # Hide legend if not needed
+                plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+                paper_bgcolor='rgba(0,0,0,0)'   # Transparent background for paper
+            )
+
+            st.plotly_chart(fig)
+
+            st.success("File uploaded and survival curve plotted!")
+            return survival_df
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
+            return None
+    else:
+        st.info("Please upload a CSV file.")
+        return None
+
+
+def generate_and_plot_survival():
+    """Generates example survival data, plots the survival curve, and displays an events table."""
+
+    n_samples = st.number_input("Number of Samples:", min_value=10, value=100, step=10)
+    event_probability = st.number_input("Event Probability:", min_value=0.0, max_value=1.0, value=0.3, step=0.1)
+    approx_days_to_fixed = st.number_input("Approximate Days to Fixed:", min_value=1, value=50, step=1)
+    variance_days_to_fixed = st.number_input("Variance in Days to Fixed:", min_value=0, value=10, step=1)
+
+    if st.button("Create Example Data"):
+        survival_times = np.random.exponential(scale=approx_days_to_fixed, size=n_samples)
+
+        # --- Generate event data with desired probability and days to fixed ---
+        event = np.zeros(n_samples, dtype=int)
+
+        # Determine the number of events to be fixed within approx_days_to_fixed
+        num_events_to_fix = int(n_samples * event_probability)
+
+        # Get indices of events with survival times within approx_days_to_fixed
+        eligible_indices = np.where(survival_times <= approx_days_to_fixed)[0]
+
+        # Adjust num_events_to_fix if it's larger than the eligible population
+        num_events_to_fix = min(num_events_to_fix, len(eligible_indices))
+
+        # Randomly select indices for events to be fixed
+        fixed_indices = np.random.choice(eligible_indices, num_events_to_fix, replace=False)
+
+        # Set events to fixed based on selected indices
+        event[fixed_indices] = 1
+
+        # --- Calculate and plot survival curve ---
+        time_points, survival_prob = kaplan_meier(survival_times, event)
+
+        # --- Calculate confidence intervals (Greenwood formula) ---
+        survival_df = pd.DataFrame({"time": survival_times, "event": event})
+        n_at_risk = len(survival_df)
+        survival_prob_lower = []
+        survival_prob_upper = []
+
+        for i, time_val in enumerate(time_points):
+            n_events = survival_df[survival_df["time"] == time_val]["event"].sum()
+            if n_at_risk > 0:
+                variance = survival_prob[i] ** 2 * (1 - survival_prob[i]) / n_at_risk
+                z_score = 1.96  # For 95% confidence interval
+                lower_bound = survival_prob[i] - z_score * np.sqrt(variance)
+                upper_bound = survival_prob[i] + z_score * np.sqrt(variance)
+
+                survival_prob_lower.append(lower_bound)
+                survival_prob_upper.append(upper_bound)
+
+                n_at_risk -= n_events
+            else:
+                survival_prob_lower.append(survival_prob[i])
+                survival_prob_upper.append(survival_prob[i])
+
+        # Create DataFrame for Plotly
+        plot_df = pd.DataFrame({
+            'Time Period': time_points,
+            'Survival Probability': survival_prob,
+            'Lower Bound': survival_prob_lower,
+            'Upper Bound': survival_prob_upper
+        })
+
+        # --- Plot survival curve using Plotly with smoothing and uncertainty ---
+        fig = px.line(plot_df, x='Time Period', y='Survival Probability',
+                      title="Kaplan-Meier Survival Curve (Example Data)")
+        fig.update_traces(mode='lines', line=dict(shape='spline', smoothing=1.3, color='blue'))
+
+        # Add confidence interval as a filled area
+        fig.add_trace(go.Scatter(x=plot_df['Time Period'], y=plot_df['Upper Bound'], mode='lines',
+                                 line=dict(width=0, shape='spline', smoothing=1.3), fillcolor='rgba(0,100,80,0.2)',
+                                 fill='tonexty', name='Confidence Interval'))
+        fig.add_trace(go.Scatter(x=plot_df['Time Period'], y=plot_df['Lower Bound'], mode='lines',
+                                 line=dict(width=0, shape='spline', smoothing=1.3), fillcolor='rgba(0,100,80,0.2)',
+                                 fill='tonexty', name='Confidence Interval'))
+
+        # --- Calculate median survival time ---
+        try:
+            median_survival_time = plot_df.loc[plot_df['Survival Probability'] <= 0.5, 'Time Period'].iloc[0]
+        except IndexError:
+            median_survival_time = plot_df['Time Period'].max()
+
+        # --- Add vertical line for median survival time ---
+        fig.add_vline(x=median_survival_time, line_width=2, line_dash="dash", line_color="red")
+
+        # Customize layout
+        fig.update_layout(yaxis=dict(range=[0, 1.1]), xaxis_title='Time Period',
+                          yaxis_title='Survival Probability', legend_title_text='Series',
+                          showlegend=False, plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
+
+        st.plotly_chart(fig)
+
+        # --- Create events table related to survival curve data with monthly growth ---
+        start_date = pd.to_datetime('2023-01-01')
+        first_seen_dates = []
+
+        # Generate dates with monthly growth
+        monthly_events = np.linspace(0, n_samples, 13, dtype=int)  # Divide events across 12 months
+        for month in range(1, 13):
+            num_events_this_month = monthly_events[month] - monthly_events[month - 1]
+            for _ in range(num_events_this_month):
+                first_seen_dates.append(start_date + pd.DateOffset(months=month - 1, days=random.randint(0, 27)))  # Add random days within the month
+
+        last_seen_dates = [first_seen_date + pd.DateOffset(days=int(survival_time))
+                           for first_seen_date, survival_time in zip(first_seen_dates, survival_times)]
+
+        events_df = pd.DataFrame({'first_seen': first_seen_dates, 'last_seen': last_seen_dates,
+                                  'fixed': event.astype(int)})
+        events_df['first_seen'] = pd.to_datetime(events_df['first_seen']).dt.date
+        events_df['last_seen'] = pd.to_datetime(events_df['last_seen']).dt.date
+        events_df['total_days_open'] = (events_df['last_seen'] - events_df['first_seen']).apply(lambda x: x.days)
+
+        # --- Display events table ---
+        st.subheader("Events Table")
+        st.dataframe(events_df)
+
+        st.success("Example data generated and survival curve plotted!")
+        return pd.DataFrame({"time": survival_times, "event": event}), events_df
+    else:
+        return pd.DataFrame(), pd.DataFrame()
+
+def format_survival_data_for_burndown(survival_data, events_df):
+    """
+    Formats survival data into cumulative monthly buckets for burn_ratio_trend_graph.
+
+    Args:
+        survival_data: Pandas DataFrame with "time" and "event" columns from generate_and_plot_survival.
+        events_df: Pandas DataFrame with "first_seen" and "event" columns (assuming it's available).
+
+    Returns:
+        Tuple: (observed_risks, departed_risks) - Lists of cumulative risks bucketed by month.
+    """
+    if survival_data is not None:
+        # --- Get event data and first_seen dates ---
+        events = survival_data['event'].values
+        first_seen_dates = events_df['first_seen']
+
+        # --- Create a DataFrame with events and months ---
+        event_data = pd.DataFrame({'event': events, 'month': [date.month for date in first_seen_dates]})
+
+        # --- Group by month and calculate cumulative observed and departed risks ---
+        observed_risks = []
+        departed_risks = []
+        cumulative_observed = 0
+        cumulative_departed = 0
+
+        for month in range(1, 13):
+            monthly_events = event_data[event_data['month'] <= month]['event']
+
+            cumulative_observed += len(monthly_events)
+            cumulative_departed += monthly_events.sum()
+
+            observed_risks.append(cumulative_observed)
+            departed_risks.append(cumulative_departed)
+
+        return observed_risks, departed_risks
+    else:
+        return None, None  # Return None if survival_data is None
+
 def play_crq():
-    st.title("AI Assisted Rapid Risk Assessment")
+    st.title("CRQ")
 
-    a = "AI Will attempt to answer every question on this page. "
-    b = "The results will require your quick validation. "
-    c = "You can also upload your most recent Business Impact Assessment (BIA) "
-    d = "As well as a recent cyber insurance questionnaire provided by your broker."
+    user_input = st.text_input("AI Assisted Company Lookup")
 
-    crq_msg = a + b + c + d
-    markdown_box("Rapid Risk Assessment Usage", crq_msg)
+    if st.button("Submit"):
+      st.write("You entered:", user_input)
 
-    st.write("")
-    #st.write("")
-    
-    input_1 = st.text_input("COMPANY NAME", key="input_1")
-    if st.button("Revenue And Market Cap Search", key="button_1"):
-      handle_input("input_1", input_1)
-     
     company_revenue = st.number_input("Enter company revenue:", value=0.0)
     market_capitalization = st.number_input("Enter market capitalization:", value=0.0)
-        
-    st.divider()
-        
-    input_2 = st.text_input("Insurance Upload & Analysis", key="input_2")
-    if st.button("Insurance Upload", key="button_2"):
-      handle_input("input_2", input_2)
 
-    limit_val = st.number_input("Enter Insurance Limit:", value=0.0)
-
-    st.divider()
-        
-    input_3 = st.text_input("BIA Upload & Analysis", key="input_3")
-    if st.button("BIA Upload", key="button_3"):
-      handle_input("input_3", input_3)
-
-    low_val = st.number_input("SLA Lower Value:", value=0.0)
-
-    ligh_val = st.number_input("SLA High Value:", value=0.0)
-        
-    st.write("")
-
-   
-    
-    st.write("Please enter values if not auto populated by AI")
-
-    st.divider()
+    st.markdown("""<hr style="height:10px;border:none;color:#333;background-color:#333;" /> """, unsafe_allow_html=True)
 
 def survival_plot(survival_times, event, key=None):
     """Plots the survival curve with Plotly and displays an events table."""
@@ -1670,68 +1989,6 @@ def survival_plot(survival_times, event, key=None):
     unique_key = str(uuid.uuid4())
     st.plotly_chart(fig, key=unique_key)
 
-def kaplan_meier(times, events):
-    """
-    Estimates the survival function using the Kaplan-Meier method.
-
-    Args:
-        times: Array of time durations for survival analysis.
-        events: Array of events (0 or 1) for survival analysis.
-
-    Returns:
-        A tuple containing:
-            - time_points: Array of unique time points where events occurred.
-            - survival_prob: Array of survival probabilities corresponding to the time points.
-    """
-    # Check if times is an array, if not convert it to an array.
-    if not isinstance(times, np.ndarray):
-        times = np.array(times, dtype=float)  
-
-    # Check if events is an array, if not convert it to an array.
-    if not isinstance(events, np.ndarray):
-        events = np.array(events, dtype=int)
-
-    # Handle NaN (Not a Number) values
-    nan_mask = np.isnan(times)
-    if nan_mask.any(): # check if there are actually NaN values
-        times = times[~nan_mask]
-        if len(times) != len(events): # if filtering changed the length
-            events = events[:len(times)] # adjust events to match
-            
-    n = len(times)
-    sorted_indices = np.argsort(times)
-    times = times[sorted_indices]
-    events = events[sorted_indices]
-
-    # Calculate survival probabilities
-    survival_prob = np.ones(n)  # Initialize survival probabilities to 1
-    time_points = []
-
-    for i in range(n):
-        if events[i] == 1:  # If an event occurred
-            survival_prob[i:] *= (1 - 1 / (n - i))  # Update survival probabilities
-            time_points.append(times[i])  # Add the time where the event occurred to time_points
-
-    # Return unique time points and corresponding survival probabilities
-    # Check for NumPy version and use appropriate approach for unique time points
-    try:
-        time_points, unique_indices = np.unique(time_points, return_indices=True) 
-    except TypeError:
-        # For older NumPy versions, use a loop-based approach
-        seen = set()
-        unique_time_points = []
-        unique_indices = []
-        for i, time in enumerate(time_points):
-            if time not in seen:
-                unique_time_points.append(time)
-                unique_indices.append(i)
-                seen.add(time)
-        time_points = unique_time_points  # Update time_points
-
-    survival_prob = survival_prob[unique_indices]  # Use the unique indices to get survival probabilities
-
-    return time_points, survival_prob
-        
 
 def generate_survival_curve(observed_risks, departed_risks, start_year=2023):
     """
@@ -1804,13 +2061,12 @@ def generate_survival_curve(observed_risks, departed_risks, start_year=2023):
 
     st.data_editor(events_table)
 
-        
 
 # Main function to handle different states
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "CRQ"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "Influence", "CRQ"])
 
     if choice == "Sign Up":
         signup()
@@ -1822,6 +2078,12 @@ def main():
         forecast_elephant()
     elif choice == "Burndown" and 'role' in st.session_state:
         play_burndown()
+        #upload_and_plot_survival()
+        #survival_data, events_df = generate_and_plot_survival()
+        #if survival_data is not None and not survival_data.empty:
+        #  observed_risks, departed_risks = format_survival_data_for_burndown(survival_data, events_df)
+        #  if observed_risks is not None:
+        #    burn_ratio_trend_graph(observed_risks, departed_risks,id_val="NewGraph",title_val="Operational Excellence", sla_value=.9)
     elif choice == "Play Pool" and 'role' in st.session_state:
         random_number_game_with_brier_score()
     elif choice == "CRQ":
