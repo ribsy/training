@@ -1043,6 +1043,11 @@ def play_burndown():
 
        burn_ratio_trend_graph(st.session_state.observed_risks, st.session_state.departed_risks, "burn_trend", "Cummulative Risk Burndown Trend With Uncertainty and SLA", st.session_state['sla'])
 
+       # Convert observed_risks and departed_risks lists to dictionaries:
+       observed_risks_dict = {i: count for i, count in enumerate(st.session_state.observed_risks)}
+       departed_risks_dict = {i: count for i, count in enumerate(st.session_state.departed_risks)}
+       generate_survival_curve(observed_risks_dict, departed_risks_dict)
+            
        burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
                         title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
 
