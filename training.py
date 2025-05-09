@@ -928,49 +928,49 @@ def play_burndown():
     st.divider()
 
 
-    # if st.button("Calculate Arrival, Departure, and Removal Rates"):
+    if st.button("Calculate Arrival, Departure, and Removal Rates"):
 
-    #     # Gamma-Poisson rate estimation
-    #     observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
-    #     departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
+        # Gamma-Poisson rate estimation
+        observed_risks = [st.session_state[key] for key in ["mone_open", "mtwo_open", "mthree_open", "mfour_open"]]
+        departed_risks = [st.session_state[key] for key in ["mone_fixed", "mtwo_fixed", "mthree_fixed", "mfour_fixed"]]
 
-    #     # Prior parameters (adjust as needed)
-    #     alpha_prior = .5  # Shape parameter
-    #     beta_prior = 0   # Rate parameter
+        # Prior parameters (adjust as needed)
+        alpha_prior = .5  # Shape parameter
+        beta_prior = 0   # Rate parameter
 
-    #     # Calculate posterior parameters
-    #     alpha_obs_posterior = alpha_prior + sum(observed_risks)
-    #     beta_obs_posterior = beta_prior + len(observed_risks)
+        # Calculate posterior parameters
+        alpha_obs_posterior = alpha_prior + sum(observed_risks)
+        beta_obs_posterior = beta_prior + len(observed_risks)
 
-    #     alpha_dpt_posterior = alpha_prior + sum(departed_risks)
-    #     beta_dpt_posterior = beta_prior + len(departed_risks)
+        alpha_dpt_posterior = alpha_prior + sum(departed_risks)
+        beta_dpt_posterior = beta_prior + len(departed_risks)
 
-    #     # Estimate rate (mean of posterior Gamma distribution)
-    #     estimated_obs_rate = alpha_obs_posterior / beta_obs_posterior
+        # Estimate rate (mean of posterior Gamma distribution)
+        estimated_obs_rate = alpha_obs_posterior / beta_obs_posterior
 
-    #     estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
+        estimated_dpt_rate = alpha_dpt_posterior / beta_dpt_posterior
 
-    #     # Calculate 95% credible interval
-    #     lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior)
-    #     upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
+        # Calculate 95% credible interval
+        lower_obs_bound = gamma.ppf(0.025, alpha_obs_posterior, scale=1/beta_obs_posterior)
+        upper_obs_bound = gamma.ppf(0.975, alpha_obs_posterior, scale=1/beta_obs_posterior)
 
-    #     lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
-    #     upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
+        lower_dpt_bound = gamma.ppf(0.025, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
+        upper_dpt_bound = gamma.ppf(0.975, alpha_dpt_posterior, scale=1/beta_dpt_posterior)
 
-    #     st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
-    #     st.write(f"95% Arrival Credible Interval: ({lower_obs_bound:.2f}, {upper_obs_bound:.2f})")
+        st.write(f"Estimated Arrival Rate: {estimated_obs_rate:.2f}")
+        st.write(f"95% Arrival Credible Interval: ({lower_obs_bound:.2f}, {upper_obs_bound:.2f})")
 
-    #     st.write(f"Estimated Departure Rate: {estimated_dpt_rate:.2f}")
-    #     st.write(f"95% Departure Credible Interval: ({lower_dpt_bound:.2f}, {upper_dpt_bound:.2f})")
+        st.write(f"Estimated Departure Rate: {estimated_dpt_rate:.2f}")
+        st.write(f"95% Departure Credible Interval: ({lower_dpt_bound:.2f}, {upper_dpt_bound:.2f})")
 
-    #     st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
+        st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
 
-    # st.divider()
+    st.divider()
 
-    # if st.button("Aggregate Values", on_click=transfer_values):
-    #     pass  # No need for other code here
+    if st.button("Aggregate Values", on_click=transfer_values):
+        pass  # No need for other code here
 
-    # st.divider()
+    st.divider()
 
     if st.button("Append Risks And Calculate Trends"):
       # Get current risk values from session state
@@ -995,8 +995,17 @@ def play_burndown():
        st.write(f"Departed Risks Rate Change: {dpt_rate_change}")
        st.write(f"Average Departed/Observed Ratio Trend: {ratio_trend}")
 
+       #st.write(st.session_state.observed_risks)
+       #st.write(st.session_state.departed_risks)
+
        burn_ratio_trend_graph(st.session_state.observed_risks, st.session_state.departed_risks, "burn_trend", "Cummulative Risk Burndown Trend With Uncertainty and SLA", st.session_state['sla'])
 
+       
+       # Convert observed_risks and departed_risks lists to dictionaries:
+       observed_risks_dict = {i: count for i, count in enumerate(st.session_state.observed_risks)}
+       departed_risks_dict = {i: count for i, count in enumerate(st.session_state.departed_risks)}
+       generate_survival_curve(observed_risks_dict, departed_risks_dict)
+       
        burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
                         title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
 
@@ -1036,18 +1045,6 @@ def play_burndown():
 
     st.divider()
 
-    # Reset button
-    if st.button("Reset Burndown"):
-        # Clear session variables
-        for key in st.session_state.keys():
-            if key.startswith('m') or key in ['total_open', 'total_fixed', 'observed_risks', 'departed_risks', 'sla', 'sla_val', 'show_graph']:
-                del st.session_state[key]
-
-        # Rerun the script to reflect the changes
-        st.rerun()
-            
-    st.divider()
-        
     if st.session_state['show_graph']:
 
         if st.session_state['total_fixed'] > st.session_state['total_open']:
@@ -1583,6 +1580,230 @@ def play_crq():
     st.write("Please enter values if not auto populated by AI")
 
     st.divider()
+
+def survival_plot(survival_times, event, key=None):
+    """Plots the survival curve with Plotly and displays an events table."""
+    # --- Ensure survival_times and event have the same length ---
+    min_len = min(len(survival_times), len(event))
+    survival_times = survival_times[:min_len]
+    event = event[:min_len]
+
+    # --- Calculate survival probabilities ---
+    time_points, survival_prob = kaplan_meier(survival_times, event)
+    
+
+    # --- Calculate confidence intervals (Greenwood formula) ---
+    survival_df = pd.DataFrame({"time": survival_times, "event": event})
+    n_at_risk = len(survival_df)
+    survival_prob_lower = []
+    survival_prob_upper = []
+
+    for i, time_val in enumerate(time_points):
+        n_events = survival_df[survival_df["time"] == time_val]["event"].sum()
+        survival_prob_at_time = survival_prob[i]
+
+        # Greenwood's formula for confidence intervals
+        if survival_prob_at_time > 0:  # Avoid division by zero
+            se = np.sqrt(
+                survival_prob_at_time**2
+                * sum(
+                    (n_events / (n_at_risk * (n_at_risk - n_events)))
+                    for n_events in survival_df[survival_df["time"] <= time_val][
+                        "event"
+                    ]
+                )
+            )
+            lower_bound = survival_prob_at_time * np.exp(-1.96 * se)  # 95% CI
+            upper_bound = survival_prob_at_time * np.exp(1.96 * se)  # 95% CI
+        else:
+            lower_bound = 0
+            upper_bound = 0
+
+        survival_prob_lower.append(lower_bound)
+        survival_prob_upper.append(upper_bound)
+
+    # Create DataFrame for plotting
+    plot_df = pd.DataFrame({
+        "Time Period": time_points,
+        "Survival Probability": survival_prob,
+        "Lower Bound": survival_prob_lower,
+        "Upper Bound": survival_prob_upper
+    })
+
+    # --- Plot survival curve using Plotly with smoothing and uncertainty ---
+    fig = px.line(plot_df, x='Time Period', y='Survival Probability',
+                  title="Kaplan-Meier Survival Curve")
+    fig.update_traces(mode='lines', line=dict(
+        shape='spline', smoothing=1.3, color='blue'))  # Smoothing
+
+    # Add confidence interval as a filled area
+    fig.add_trace(go.Scatter(
+        x=plot_df['Time Period'],
+        y=plot_df['Upper Bound'],
+        mode='lines',
+        line=dict(width=0, shape='spline', smoothing=1.3),
+        fillcolor='rgba(0,100,80,0.2)',
+        fill='tonexty',
+        name='Confidence Interval'
+    ))
+    fig.add_trace(go.Scatter(
+        x=plot_df['Time Period'],
+        y=plot_df['Lower Bound'],
+        mode='lines',
+        line=dict(width=0, shape='spline', smoothing=1.3),
+        fillcolor='rgba(0,100,80,0.2)',
+        fill='tonexty',
+        name='Confidence Interval'
+    ))
+
+    # Customize layout for similar style
+    fig.update_layout(
+        yaxis=dict(range=[0, 1.1]),  # Set y-axis range
+        xaxis_title='Time Period Days Open',
+        yaxis_title='Survival Probability',
+        legend_title_text='Series',
+        showlegend=False,  # Hide legend if not needed
+        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        paper_bgcolor='rgba(0,0,0,0)'   # Transparent background for paper
+    )
+
+    unique_key = str(uuid.uuid4())
+    st.plotly_chart(fig, key=unique_key)
+
+def kaplan_meier(times, events):
+    """
+    Estimates the survival function using the Kaplan-Meier method.
+
+    Args:
+        times: Array of time durations for survival analysis.
+        events: Array of events (0 or 1) for survival analysis.
+
+    Returns:
+        A tuple containing:
+            - time_points: Array of unique time points where events occurred.
+            - survival_prob: Array of survival probabilities corresponding to the time points.
+    """
+    # Check if times is an array, if not convert it to an array.
+    if not isinstance(times, np.ndarray):
+        times = np.array(times, dtype=float)  
+
+    # Check if events is an array, if not convert it to an array.
+    if not isinstance(events, np.ndarray):
+        events = np.array(events, dtype=int)
+
+    # Handle NaN (Not a Number) values
+    nan_mask = np.isnan(times)
+    if nan_mask.any(): # check if there are actually NaN values
+        times = times[~nan_mask]
+        if len(times) != len(events): # if filtering changed the length
+            events = events[:len(times)] # adjust events to match
+            
+    n = len(times)
+    sorted_indices = np.argsort(times)
+    times = times[sorted_indices]
+    events = events[sorted_indices]
+
+    # Calculate survival probabilities
+    survival_prob = np.ones(n)  # Initialize survival probabilities to 1
+    time_points = []
+
+    for i in range(n):
+        if events[i] == 1:  # If an event occurred
+            survival_prob[i:] *= (1 - 1 / (n - i))  # Update survival probabilities
+            time_points.append(times[i])  # Add the time where the event occurred to time_points
+
+    # Return unique time points and corresponding survival probabilities
+    # Check for NumPy version and use appropriate approach for unique time points
+    try:
+        time_points, unique_indices = np.unique(time_points, return_indices=True) 
+    except TypeError:
+        # For older NumPy versions, use a loop-based approach
+        seen = set()
+        unique_time_points = []
+        unique_indices = []
+        for i, time in enumerate(time_points):
+            if time not in seen:
+                unique_time_points.append(time)
+                unique_indices.append(i)
+                seen.add(time)
+        time_points = unique_time_points  # Update time_points
+
+    survival_prob = survival_prob[unique_indices]  # Use the unique indices to get survival probabilities
+
+    return time_points, survival_prob
+        
+
+def generate_survival_curve(observed_risks, departed_risks, start_year=2023):
+    """
+    Generates a survival curve with the number of fixed events equal to the number of observed risks.
+    Also ensures that all observed_dates have a corresponding departed_date, using the maximum date if necessary.
+    """
+
+    observed_dates = []
+    departed_dates = []
+    fixed = []  # Initialize fixed array with all 0s
+    observed_risks_with_dates = []  # To store observed risks with their dates
+
+    departed_risks_copy = departed_risks.copy()  # Create a copy to avoid modifying the original
+
+    # --- Generate observed dates and initialize fixed ---
+    for month_index, risk_count in observed_risks.items():
+        for _ in range(risk_count):
+            day = random.randint(1, 28)
+            date = datetime.date(start_year, month_index + 1, day)
+            observed_dates.append(date)
+            observed_risks_with_dates.append((date, month_index))
+            fixed.append(0)  # Initialize fixed flag to 0
+
+    # --- Generate departed dates and update fixed ---
+    total_departed_risks = sum(departed_risks.values())  # Total number of departed risks
+    max_month_index = max(max(observed_risks.keys()), max(departed_risks.keys()))
+    max_day = calendar.monthrange(start_year, max_month_index + 1)[1]
+    max_date = datetime.date(start_year, max_month_index + 1, max_day)
+
+    # Logic to assign departure dates and update fixed for all observed dates
+    for i in range(len(observed_dates)):  
+        date, observed_month_index = observed_risks_with_dates[i]
+        departure_found = False
+
+        # Check for departure within the same month first
+        if observed_month_index in departed_risks_copy and departed_risks_copy[observed_month_index] > 0 and i < total_departed_risks:
+            day = random.randint(1, 28)
+            departure_date = datetime.date(start_year, observed_month_index + 1, day)
+            if departure_date >= date:
+                departed_dates.append(departure_date)
+                departed_risks_copy[observed_month_index] -= 1
+                fixed[i] = 1  # Set to 1 for fixed event
+                departure_found = True
+           
+        # If no departure in the same month, check future months
+        if not departure_found and i < total_departed_risks:
+            for departure_month_index in range(observed_month_index + 1, len(departed_risks_copy)):
+                if departure_month_index in departed_risks_copy and departed_risks_copy[departure_month_index] > 0:
+                    day = random.randint(1, 28)
+                    departure_date = datetime.date(start_year, departure_month_index + 1, day)
+                    departed_dates.append(departure_date)
+                    departed_risks_copy[departure_month_index] -= 1
+                    fixed[i] = 1  # Set to 1 for fixed event
+                    departure_found = True
+                    break
+
+        # Appending max_date if departure not found
+        if not departure_found:
+            departed_dates.append(max_date)
+
+    # --- Calculate time durations in days ---
+    times = [(departed_date - observed_date).days for observed_date, departed_date in zip(observed_dates, departed_dates)]
+
+    # --- Use 'fixed' array as events ---
+    events = np.array(fixed, dtype=int)  # Convert fixed to NumPy array with integer type
+
+    # --- Create DataFrame and call survival_plot ---
+    events_table = pd.DataFrame({"First Seen": observed_dates, "Last Seen": departed_dates, "Time": times, "Event": fixed})
+    survival_plot(times, events)
+
+    st.data_editor(events_table)
+
         
 
 # Main function to handle different states
