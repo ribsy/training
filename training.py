@@ -978,10 +978,10 @@ def play_burndown():
 
     st.divider()
 
-    if st.button("Aggregate Values", on_click=transfer_values):
-        pass  # No need for other code here
+    #if st.button("Aggregate Values", on_click=transfer_values):
+    #    pass  # No need for other code here
 
-    st.divider()
+    #st.divider()
 
     if st.button("Append Risks And Calculate Trends"):
       # Get current risk values from session state
