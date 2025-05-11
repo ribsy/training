@@ -1,5 +1,4 @@
 
-
 import sqlite3
 import hashlib
 import streamlit as st
@@ -976,12 +975,12 @@ def play_burndown():
 
         st.write(f"AVERAGE RISK REMOVAL RATE: ({(estimated_dpt_rate/estimated_obs_rate)*100:.2f})%")
 
-    st.divider()
+    #st.divider()
 
     #if st.button("Aggregate Values", on_click=transfer_values):
     #    pass  # No need for other code here
 
-    #st.divider()
+    st.divider()
 
     if st.button("Append Risks And Calculate Trends"):
       # Get current risk values from session state
@@ -1043,11 +1042,6 @@ def play_burndown():
 
        burn_ratio_trend_graph(st.session_state.observed_risks, st.session_state.departed_risks, "burn_trend", "Cummulative Risk Burndown Trend With Uncertainty and SLA", st.session_state['sla'])
 
-       # Convert observed_risks and departed_risks lists to dictionaries:
-       observed_risks_dict = {i: count for i, count in enumerate(st.session_state.observed_risks)}
-       departed_risks_dict = {i: count for i, count in enumerate(st.session_state.departed_risks)}
-       generate_survival_curve(observed_risks_dict, departed_risks_dict)
-            
        burn_trend_graph(risk_list=st.session_state.observed_risks, id_val="test_arrive",
                         title_val="Risk Arrivals Over Time with Average Trend and Credible Interval")
 
@@ -1061,6 +1055,16 @@ def play_burndown():
 
     st.divider()
 
+    # Add the "Clear Burndown" button
+    if st.button("Clear Burndown"):
+        # Reset session variables
+        for key in st.session_state.keys():
+            if key.startswith(('mone_', 'mtwo_', 'mthree_', 'mfour_', 'total_', 'observed_', 'departed_', 'sla')):  # Adjust prefixes as needed
+                del st.session_state[key]
+        st.rerun()  # Rerun the script to reflect the changes
+
+    st.write(" ")
+    st.write(" ")
     if st.session_state['show_graph']:
 
         if st.session_state['total_fixed'] > st.session_state['total_open']:
@@ -2071,7 +2075,7 @@ def generate_survival_curve(observed_risks, departed_risks, start_year=2023):
 def main():
     st.sidebar.title("Navigation")
 
-    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool", "Influence", "CRQ"])
+    choice = st.sidebar.radio("Go to", ["Sign Up", "Login", "Probability Words", "Forecasting", "Burndown", "Play Pool"])
 
     if choice == "Sign Up":
         signup()
